@@ -1,0 +1,33 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   logical_operators.c                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tbaniatt <tbaniatt@student.42amman.com>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/16 00:00:00 by tbaniatt          #+#    #+#             */
+/*   Updated: 2025/08/16 00:00:00 by tbaniatt         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../includes/minishell.h"
+
+int	execute_logical_and(t_ast *ast, t_shell *shell)
+{
+	int	left_status;
+
+	left_status = execute_ast(ast->s_binary.left, shell);
+	if (left_status != 0)
+		return (left_status);
+	return (execute_ast(ast->s_binary.right, shell));
+}
+
+int	execute_logical_or(t_ast *ast, t_shell *shell)
+{
+	int	left_status;
+
+	left_status = execute_ast(ast->s_binary.left, shell);
+	if (left_status == 0)
+		return (left_status);
+	return (execute_ast(ast->s_binary.right, shell));
+}
