@@ -6,7 +6,7 @@
 /*   By: tbaniatt <tbaniatt@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 15:29:04 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/23 17:07:09 by tbaniatt         ###   ########.fr       */
+/*   Updated: 2025/08/24 01:22:49 by tbaniatt         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,19 +125,4 @@ int	main(int argc, char **argv, char **environment)
 			process_line(line, &shell, &parser, &expander_creds);
 		}
 	}
-	else
-	{
-		/* Non-interactive mode - read from stdin */
-		size_t len = 0;
-		ssize_t read_result;
-
-		while ((read_result = getline(&line, &len, stdin)) != -1)
-		{
-			/* Remove trailing newline if present */
-			if (read_result > 0 && line[read_result - 1] == '\n')
-				line[read_result - 1] = '\0';
-			process_line(line, &shell, &parser, &expander_creds);
-		}
-	}
-	
 }

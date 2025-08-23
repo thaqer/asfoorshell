@@ -47,6 +47,8 @@ static void	execute_child_process(char *command_path,
 	perror("execve");
 	if (env_array)
 		ft_free_array(env_array);
+	if (errno == EACCES)
+		exit(126);
 	exit(127);
 }
 
