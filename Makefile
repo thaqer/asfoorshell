@@ -32,7 +32,6 @@ SRC_FILES = \
     parser/parse_simple_cmd.c \
     parser/parser_core_helpers.c \
     parser/parser.c \
-    parser/ast_debug.c \
     enviroment/enviroment.c \
     enviroment/enviroment_utils.c \
     enviroment/enviroment_utils_extra.c \

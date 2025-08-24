@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_ast.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tbaniatt <tbaniatt@student.42amman.com>    +#+  +:+       +#+        */
+/*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 00:52:33 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/24 01:33:59 by tbaniatt         ###   ########.fr       */
+/*   Updated: 2025/08/24 19:01:25 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,9 +83,9 @@ int	execute_simple_command(t_ast *ast, t_shell *shell)
 		restore_and_clear_std_fds(shell, saved_stdin, saved_stdout);
 		return (0);
 	}
-	if (is_builtin_command(argv[0]))
+	if (is_builtin_command(argv[0]) && g_sig_value == 0)
 		result = execute_builtin(argv, shell);
-	else
+	else if (g_sig_value == 0)
 		result = execute_external_command(argv, shell);
 	restore_and_clear_std_fds(shell, saved_stdin, saved_stdout);
 	return (result);
@@ -104,7 +104,7 @@ void	preprocess_left_heredocs(t_ast *ast, t_shell *shell)
 		{
 			if (current->type == REDIR_HEREDOC)
 			{
-				fprintf(stderr, "Executing pipeline...%s\n", current->target);
+				fprintf(stderr, "1 Executing pipeline...%s\n", current->target);
 				current->heredoc_fd = handle_heredoc_redir(current->target,
 						shell);
 			}

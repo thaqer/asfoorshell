@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amaassaf <amaassaf@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 08:26:40 by amaassaf          #+#    #+#             */
-/*   Updated: 2025/08/22 08:58:57 by amaassaf         ###   ########.fr       */
+/*   Updated: 2025/08/24 20:55:52 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,19 +100,5 @@ t_ast						*parse_group(t_parser *parser);
 t_ast						*parse_pipeline(t_parser *p);
 t_ast						*parse_logical_line(t_parser *p);
 t_ast						*parse_input_line(t_parser *parser);
-
-/*--------print and visualize--------*/
-/* Print a human-readable tree to stderr */
-void						ast_print(const t_ast *node);
-
-/* Print to a specific fd (e.g., 1 for stdout, 2 for stderr) */
-void						ast_print_fd(const t_ast *node, int fd);
-
-/* Emit a Graphviz DOT file. Returns 0 on success, -1 on IO error. */
-int							ast_to_dot_file(const t_ast *node,
-								const char *path);
-
-/* (Optional) utility to stringify a redirection type */
-const char					*redir_type_str(t_redir_type t);
 
 #endif

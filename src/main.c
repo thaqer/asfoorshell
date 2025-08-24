@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tbaniatt <tbaniatt@student.42amman.com>    +#+  +:+       +#+        */
+/*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 15:29:04 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/24 01:22:49 by tbaniatt         ###   ########.fr       */
+/*   Updated: 2025/08/24 18:39:56 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ void	process_line(char *line, t_shell *shell, t_parser *parser,
 		t_expander_creds *expander_creds)
 {
 	if (line && *line)
-		add_history(line);
+	add_history(line);
 	shell->tokens = tokenize(line);
 	if (!shell->tokens)
 	{
@@ -83,9 +83,12 @@ void	process_line(char *line, t_shell *shell, t_parser *parser,
 	else
 	{
 		preprocess_all_heredocs(shell->ast_root, shell);
-		shell->status = execute_ast(shell->ast_root, shell);
-		free_ast(shell->ast_root);
-		shell->ast_root = NULL;
+		if (g_sig_value == 0) // to not execute after signals
+		{
+			shell->status = execute_ast(shell->ast_root, shell);
+			free_ast(shell->ast_root);
+			shell->ast_root = NULL;
+		}
 	}
 	expander_creds->last_exit_status = shell->status;
 	free_tok_list(shell->tokens);
@@ -122,6 +125,12 @@ int	main(int argc, char **argv, char **environment)
 			line = readline("\033[93masfoorshell🐥\033[0m:~ ");
 			if (line == NULL)
 				exit_shell(&shell);
+			if (g_sig_value != 0)
+			{
+				shell.status = 130;
+				expander_creds.last_exit_status = 130;
+				g_sig_value = 0;
+			}	
 			process_line(line, &shell, &parser, &expander_creds);
 		}
 	}

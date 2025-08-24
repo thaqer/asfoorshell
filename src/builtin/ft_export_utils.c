@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_export_utils.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tbaniatt <tbaniatt@student.42amman.com>    +#+  +:+       +#+        */
+/*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 23:59:00 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/16 00:46:26 by tbaniatt         ###   ########.fr       */
+/*   Updated: 2025/08/24 14:38:34 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,18 +52,20 @@ static int	update_existing_env(t_env *node, const char *value, t_shell *shell)
 }
 
 /* set or append an env */
-int	set_env(t_shell *shell, const char *key, const char *value)
+int	set_env(t_shell *shell, const char *key, const char *value, int *flag)
 {
 	t_env	*node;
 	t_env	*tmp;
 	t_env	*new;
 
+	new = NULL;
 	node = find_env((char *)key, shell->env);
 	if (node)
 		return (update_existing_env(node, value, shell));
-	new = new_env_node(key, value);
+	if (*flag != 1)
+		new = new_env_node(key, value);
 	if (!new)
-		return (shell_error_message(strerror(errno)));
+		return (1);
 	if (!shell->env)
 	{
 		shell->env = new;

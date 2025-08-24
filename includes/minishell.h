@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tbaniatt <tbaniatt@student.42amman.com>    +#+  +:+       +#+        */
+/*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 19:12:42 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/20 20:48:03 by tbaniatt         ###   ########.fr       */
+/*   Updated: 2025/08/24 20:55:28 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,16 +46,6 @@ typedef struct s_shell
 	t_execution	*execution;
 }				t_shell;
 
-// static t_builtin g_builtins[] = {
-//     {"echo", ft_echo_argv},
-//     {"cd", ft_cd_argv},
-//     {"pwd", ft_pwd},
-//     {"export", ft_export_argv},
-//     {"unset", ft_unset_argv},
-//     {"env", print_env},
-//     {"exit", ft_exit_argv},
-//     {NULL, NULL}
-// };
 
 void			setup_signals(int mode);
 

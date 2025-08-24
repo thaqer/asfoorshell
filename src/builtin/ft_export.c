@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_export.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tbaniatt <tbaniatt@student.42amman.com>    +#+  +:+       +#+        */
+/*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/28 12:06:47 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/16 00:24:35 by tbaniatt         ###   ########.fr       */
+/*   Updated: 2025/08/24 18:54:13 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ static void	export_process(char *arg, t_shell *shell)
 {
 	char	*key;
 	char	*value;
+	int		flag;
 
 	key = NULL;
 	value = NULL;
@@ -44,16 +45,8 @@ static void	export_process(char *arg, t_shell *shell)
 		shell_error_message(strerror(errno));
 		return ;
 	}
-	veiled_key(key, shell);
-	if (shell->status == 1)
-	{
-		if (key)
-			free(key);
-		if (value)
-			free(value);
-		return ;
-	}
-	if (set_env(shell, key, value))
+	veiled_key(key, shell, &flag);
+	if (set_env(shell, key, value, &flag))
 		shell->status = 1;
 	if (key)
 		free(key);
@@ -84,25 +77,17 @@ int	ft_export_argv(char **input, t_shell *shell)
 	return (shell->status);
 }
 
-void	veiled_key(char *key, t_shell *shell)
+void	veiled_key(char *key, t_shell *shell, int *flag)
 {
 	int	i;
 
 	i = 0;
+	*flag = 0;
 	while (key[i] == ' ')
 		i++;
-	if (key[0] == '_' || ft_isalpha(key[0]))
+	if (!ft_isalpha(key[0]) && key[0] != '_')
 	{
-		while (key[i] && key[i] != ' ' && key[i] != '=')
-		{
-			if (!ft_isalnum(key[i]) && key[i] != '_')
-			{
-				export_identifier_error(key, shell);
-				return ;
-			}
-			i++;
-		}
-	}
-	else
 		export_identifier_error(key, shell);
+		*flag = 1;
+	}
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expand.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alrfa3i <alrfa3i@student.42.fr>            +#+  +:+       +#+        */
+/*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 09:00:09 by alrfa3i           #+#    #+#             */
-/*   Updated: 2025/08/22 09:04:45 by alrfa3i          ###   ########.fr       */
+/*   Updated: 2025/08/24 12:54:44 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,9 @@ int	expand_tokens(t_token **head, t_expander_creds *expander_creds)
 				if (!splice_mixed_expansion(head, index, cur->value,
 						expander_creds))
 					return (0);
+				cur = *head; //I fixed invalid read for "l"s (Restart from *head after splice)Because splice changes the list
+				index = 0;
+				continue;
 			}
 		}
 		cur = cur->next;
