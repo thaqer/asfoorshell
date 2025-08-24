@@ -44,5 +44,6 @@ typedef struct s_redir
 int						handle_redirections(t_redir *redirs, t_shell *shell);
 int						handle_heredoc_redir(char *delimiter, t_shell *shell);
 int						handle_heredocs_first(t_redir *redirs, t_shell *shell);
+char						*expand_heredoc_line(char *line, t_shell *shell);
 
 #endif
