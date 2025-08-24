@@ -14,12 +14,11 @@
 
 static void	insert_sorted(t_env *arr[], int *n, t_env *node)
 {
-	int		pos;
+	int	pos;
 
 	pos = *n;
-	while (pos > 0
-		&& ft_strncmp(arr[pos - 1]->key, node->key,
-			ft_strlen(arr[pos - 1]->key) + 1) > 0)
+	while (pos > 0 && ft_strncmp(arr[pos - 1]->key, node->key, ft_strlen(arr[pos
+				- 1]->key) + 1) > 0)
 	{
 		arr[pos] = arr[pos - 1];
 		pos--;

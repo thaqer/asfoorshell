@@ -25,20 +25,20 @@ char	*ft_strndup(const char *s, size_t n)
 	size = ++n;
 	duplicate = malloc(size * sizeof(char));
 	if (!duplicate)
-		return(NULL);
+		return (NULL);
 	saved_start = duplicate;
-	while(*s && --n)
+	while (*s && --n)
 		*duplicate++ = *s++;
 	*duplicate = '\0';
 	return (saved_start);
-	//return (ft_substr(s, 0, n));
+	// return (ft_substr(s, 0, n));
 }
 
 t_token	*create_token(char *value, t_token_type type, t_qflags flags)
 {
 	t_token	*token;
 
-	if(!value)
+	if (!value)
 		return (NULL);
 	token = malloc(sizeof(t_token));
 	// better to write it like this
@@ -133,7 +133,7 @@ void	delete_node(t_token **head, const char *value)
 	}
 }
 
-int insert_at_index(t_token **head, size_t index, t_token *new_node)
+int	insert_at_index(t_token **head, size_t index, t_token *new_node)
 {
 	size_t	i;
 	t_token	*cur;
@@ -162,19 +162,18 @@ int insert_at_index(t_token **head, size_t index, t_token *new_node)
 
 t_qflags	compute_qflags_from_raw(char *s)
 {
-	int	has_sq;
-	int	has_dq;
-	int	unquoted;
-	t_qflags flags;
+	int			has_sq;
+	int			has_dq;
+	int			unquoted;
+	t_qflags	flags;
 
 	has_sq = 0;
 	has_dq = 0;
 	unquoted = 0;
 	flags = QF_NONE;
-
 	while (*s)
 	{
-		if(*s == '\'')
+		if (*s == '\'')
 		{
 			has_sq = 1;
 			s++;
@@ -182,7 +181,7 @@ t_qflags	compute_qflags_from_raw(char *s)
 				s++;
 			s++;
 		}
-		else if(*s == '"')
+		else if (*s == '"')
 		{
 			has_dq = 1;
 			s++;

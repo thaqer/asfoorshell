@@ -62,7 +62,7 @@ example : expect(&parser, TOKEN_PIPE);
 
 Option 2: t_token *expect() (returns token)
 Checks, consumes, and returns a pointer to the consumed token.
-Useful when you need the token value 
+Useful when you need the token value
 (for example, to store a filename, argument, etc.).
 Example: t_token *tok = expect(&parser, TOKEN_WORD);
 add_argument(cmd, tok->value);
@@ -76,9 +76,9 @@ For command arguments
 And sometimes you don’t care and can just ignore the return value.
 Returning it doesn’t hurt; you can always ignore it.
 
-Recommended Signature => 
-t_token *expect(t_parser *parser, t_token_type type);
-If you don’t need the token, 
+Recommended Signature =>
+t_token	*expect(t_parser *parser, t_token_type type);
+If you don’t need the token,
 just write => expect(&parser, TOKEN_PIPE); // ignore return
 */
 

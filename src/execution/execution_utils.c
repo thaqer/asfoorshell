@@ -36,8 +36,8 @@ char	*search_in_path_dirs(char **paths, char *cmd)
 	return (NULL);
 }
 
-static void	execute_child_process(char *command_path,
-				char **argv, t_shell *shell)
+static void	execute_child_process(char *command_path, char **argv,
+		t_shell *shell)
 {
 	char	**env_array;
 

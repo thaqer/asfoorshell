@@ -41,7 +41,7 @@ int	handle_heredocs_first(t_redir *redirs, t_shell *shell)
 			if (last_fd == -1)
 				return (-1);
 			if (last_fd == -2)
-				break;
+				break ;
 		}
 		current = current->next;
 	}

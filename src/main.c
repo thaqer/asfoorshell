@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: daniah <daniah@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 15:29:04 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/24 18:39:56 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/25 00:49:28 by daniah           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ void	process_line(char *line, t_shell *shell, t_parser *parser,
 		t_expander_creds *expander_creds)
 {
 	if (line && *line)
-	add_history(line);
+		add_history(line);
 	shell->tokens = tokenize(line);
 	if (!shell->tokens)
 	{
@@ -81,15 +81,7 @@ void	process_line(char *line, t_shell *shell, t_parser *parser,
 	if (shell->parser->error)
 		shell->status = 2;
 	else
-	{
-		preprocess_all_heredocs(shell->ast_root, shell);
-		if (g_sig_value == 0) // to not execute after signals
-		{
-			shell->status = execute_ast(shell->ast_root, shell);
-			free_ast(shell->ast_root);
-			shell->ast_root = NULL;
-		}
-	}
+		run_ast_if_no_signal(shell);
 	expander_creds->last_exit_status = shell->status;
 	free_tok_list(shell->tokens);
 	shell->tokens = NULL;
@@ -101,6 +93,7 @@ void	exit_shell(t_shell *shell)
 	cleanup(shell);
 	clear_history();
 	rl_free_line_state();
+	printf("\rexit\n");
 	exit(0);
 }
 
@@ -126,11 +119,7 @@ int	main(int argc, char **argv, char **environment)
 			if (line == NULL)
 				exit_shell(&shell);
 			if (g_sig_value != 0)
-			{
-				shell.status = 130;
-				expander_creds.last_exit_status = 130;
-				g_sig_value = 0;
-			}	
+				sig_status(&shell, &expander_creds);
 			process_line(line, &shell, &parser, &expander_creds);
 		}
 	}

@@ -40,6 +40,7 @@ SRC_FILES = \
     execution/execution_utils.c \
     execution/execute_ast_utils.c \
     execution/logical_operators.c \
+    execution/preprocess_heredoc.c \
     expander/core_expand.c \
     expander/dispatcher_expander.c \
     expander/expand.c \
@@ -61,6 +62,7 @@ SRC_FILES = \
     signals.c \
     signals_utils.c \
     cleanup.c \
+    shell_utils.c \
 
 
 

@@ -27,6 +27,7 @@ int	splice_unquoted_expansion(t_token **head, int index, char *str)
 	char	**split;
 	int		i;
 	t_token	*new_token;
+	int		j;
 
 	split = ft_split(str, ' ');
 	i = 0;
@@ -42,7 +43,7 @@ int	splice_unquoted_expansion(t_token **head, int index, char *str)
 		index++;
 	}
 	{
-		int j = 0;
+		j = 0;
 		while (split[j])
 			free(split[j++]);
 		free(split);
@@ -90,7 +91,6 @@ int	expand_tokens(t_token **head, t_expander_creds *expander_creds)
 				free(old_value);
 				if (!cur->value)
 					return (0);
-				
 				// Only splice if the expanded value contains spaces (indicating splitting is needed)
 				if (ft_strchr(cur->value, ' '))
 				{
@@ -103,9 +103,10 @@ int	expand_tokens(t_token **head, t_expander_creds *expander_creds)
 				if (!splice_mixed_expansion(head, index, cur->value,
 						expander_creds))
 					return (0);
-				cur = *head; //I fixed invalid read for "l"s (Restart from *head after splice)Because splice changes the list
+				cur = *head;
+					// I fixed invalid read for "l"s (Restart from *head after splice)Because splice changes the list
 				index = 0;
-				continue;
+				continue ;
 			}
 		}
 		cur = cur->next;

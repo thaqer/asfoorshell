@@ -81,8 +81,7 @@ char	*extract_variable_name(char *start, char **end_pos)
 	return (ft_strndup(start, (size_t)(current - start)));
 }
 
-char	*get_env_var_value( char *var_start, t_env *envp,
-								char **end_pos)
+char	*get_env_var_value(char *var_start, t_env *envp, char **end_pos)
 {
 	char		*variable_name;
 	char		*variable_value;
@@ -100,13 +99,14 @@ char	*get_env_var_value( char *var_start, t_env *envp,
 			return (NULL);
 	}
 	type = param_determinant(**end_pos);
-	if (type == OTHER && **end_pos != '\0' && **end_pos != '\'' && **end_pos != '\"')
+	if (type == OTHER && **end_pos != '\0' && **end_pos != '\''
+		&& **end_pos != '\"')
 		(*end_pos)++;
 	return (variable_value);
 }
 
-char	*expand_env_variable(char *output, char *var_start,
-								t_env *envp, char **end_pos)
+char	*expand_env_variable(char *output, char *var_start, t_env *envp,
+		char **end_pos)
 {
 	char	*variable_value;
 	char	*new_output;
@@ -134,8 +134,8 @@ char	*expand_numeric_value(char *output, char **pos, char *program_name)
 		return (output);
 }
 
-char	*handle_dollar_type(char *output, t_params type,
-	char **pos, t_expander_creds *expander_creds)
+char	*handle_dollar_type(char *output, t_params type, char **pos,
+		t_expander_creds *expander_creds)
 {
 	if (type == Q_MARK)
 	{
@@ -153,7 +153,7 @@ char	*handle_dollar_type(char *output, t_params type,
 }
 
 char	*process_dollar_expansion(char *output, char **current_pos,
-	t_expander_creds *expander_creds)
+		t_expander_creds *expander_creds)
 {
 	char		*next_char;
 	char		*result;
@@ -168,8 +168,8 @@ char	*process_dollar_expansion(char *output, char **current_pos,
 	next_char_type = param_determinant(*next_char);
 	if (next_char_type != ALPHA && next_char_type != UNDERSCORE)
 		*current_pos = next_char;
-	result = handle_dollar_type(output, next_char_type,
-			&next_char, expander_creds);
+	result = handle_dollar_type(output, next_char_type, &next_char,
+			expander_creds);
 	*current_pos = next_char;
 	return (result);
 }
@@ -191,12 +191,12 @@ char	*init_expander(char *input_string, char **unquoted_str)
 }
 
 char	*process_literal_segment(char *output, char *start, char *current,
-									char *unquoted_str)
+		char *unquoted_str)
 {
 	if (current > start)
 	{
-		output = append_literal_segment(output, start,
-				(size_t)(current - start));
+		output = append_literal_segment(output, start, (size_t)(current
+					- start));
 		if (!output)
 		{
 			free(unquoted_str);
@@ -207,12 +207,12 @@ char	*process_literal_segment(char *output, char *start, char *current,
 }
 
 char	*process_remaining_literal(char *output, char *start, char *current,
-										char *unquoted_str)
+		char *unquoted_str)
 {
 	if (current > start)
 	{
-		output = append_literal_segment(output, start,
-				(size_t)(current - start));
+		output = append_literal_segment(output, start, (size_t)(current
+					- start));
 		if (!output)
 		{
 			free(unquoted_str);
@@ -237,8 +237,8 @@ char	*expansion_loop(char *output, char *unquoted_str,
 			current_pos++;
 			continue ;
 		}
-		output = process_literal_segment(output, segment_start,
-				current_pos, unquoted_str);
+		output = process_literal_segment(output, segment_start, current_pos,
+				unquoted_str);
 		if (!output)
 			return (NULL);
 		output = process_dollar_expansion(output, &current_pos, expander_creds);

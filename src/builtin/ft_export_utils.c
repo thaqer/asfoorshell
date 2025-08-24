@@ -56,12 +56,13 @@ int	set_env(t_shell *shell, const char *key, const char *value, int *flag)
 {
 	t_env	*node;
 	t_env	*tmp;
-	t_env	*new = NULL;
+	t_env	*new;
 
+	new = NULL;
 	node = find_env((char *)key, shell->env);
 	if (node)
 		return (update_existing_env(node, value, shell));
-	if (*flag != 1) // to not add invalid variable 
+	if (*flag != 1) // to not add invalid variable
 		new = new_env_node(key, value);
 	if (!new)
 		return (1);

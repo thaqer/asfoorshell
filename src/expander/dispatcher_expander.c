@@ -20,8 +20,8 @@ char	*dquote_expander(char *input_string, t_expander_creds *expander_creds)
 	expanded_output = init_expander(input_string, &unquoted_string);
 	if (!expanded_output)
 		return (NULL);
-	expanded_output = expansion_loop(expanded_output,
-			unquoted_string, expander_creds);
+	expanded_output = expansion_loop(expanded_output, unquoted_string,
+			expander_creds);
 	if (!expanded_output)
 		return (NULL);
 	free(unquoted_string);
@@ -29,15 +29,15 @@ char	*dquote_expander(char *input_string, t_expander_creds *expander_creds)
 }
 
 char	*unquoted_variable_handler(char *input_string,
-	t_expander_creds *expander_creds)
+		t_expander_creds *expander_creds)
 {
 	char	*expanded_output;
 
 	expanded_output = ft_strdup("");
 	if (!expanded_output)
 		return (NULL);
-	expanded_output = expansion_loop(expanded_output,
-			input_string, expander_creds);
+	expanded_output = expansion_loop(expanded_output, input_string,
+			expander_creds);
 	if (!expanded_output)
 		return (NULL);
 	return (expanded_output);

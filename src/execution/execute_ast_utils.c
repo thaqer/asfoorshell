@@ -48,8 +48,8 @@ static int	save_fds_and_check(int *saved_stdin, int *saved_stdout)
 	return (0);
 }
 
-int	save_and_redirect(t_redir *redirs, t_shell *shell,
-	int *saved_stdin, int *saved_stdout)
+int	save_and_redirect(t_redir *redirs, t_shell *shell, int *saved_stdin,
+		int *saved_stdout)
 {
 	int	result;
 

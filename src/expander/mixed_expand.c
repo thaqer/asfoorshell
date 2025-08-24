@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   mixed_expand.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: daniah <daniah@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 09:51:31 by alrfa3i           #+#    #+#             */
-/*   Updated: 2025/08/24 12:29:36 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/25 00:30:10 by daniah           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ static t_segment	*create_segment(char *value, t_segment_type type)
 
 /* Append segment to list */
 static t_segment	*append_segment(t_segment **head, char *value,
-	t_segment_type type)
+		t_segment_type type)
 {
 	t_segment	*new_segment;
 	t_segment	*current;
@@ -69,11 +69,12 @@ static void	free_segment_list(t_segment *head)
 
 static t_segment	*parse_mixed_segments(char *input)
 {
-	t_segment	*segments;
-	t_state		state;
-	char		*start;
-	char		*current;
-	char		*segment_value;
+	t_segment		*segments;
+	t_state			state;
+	char			*start;
+	char			*current;
+	char			*segment_value;
+	t_segment_type	seg_type;
 
 	segments = NULL;
 	state = STATE_NORMAL;
@@ -135,8 +136,8 @@ static t_segment	*parse_mixed_segments(char *input)
 		{
 			current++;
 			segment_value = ft_strndup(start, current - start);
-			if (!append_segment(&segments,
-					segment_value, SEGMENT_DOUBLE_QUOTED))
+			if (!append_segment(&segments, segment_value,
+					SEGMENT_DOUBLE_QUOTED))
 			{
 				free(segment_value);
 				free_segment_list(segments);
@@ -154,9 +155,7 @@ static t_segment	*parse_mixed_segments(char *input)
 	}
 	if (current > start)
 	{
-		t_segment_type seg_type = (state == STATE_NORMAL) ? SEGMENT_UNQUOTED : 
-			(state == STATE_SQUOTE) ? SEGMENT_SINGLE_QUOTED : 
-			SEGMENT_DOUBLE_QUOTED;
+		seg_type = (state == STATE_NORMAL) ? SEGMENT_UNQUOTED : (state == STATE_SQUOTE) ? SEGMENT_SINGLE_QUOTED : SEGMENT_DOUBLE_QUOTED;
 		segment_value = ft_strndup(start, current - start);
 		if (!append_segment(&segments, segment_value, seg_type))
 		{
@@ -174,7 +173,7 @@ static int	append_split_tokens(t_token **head, int *index, char *str)
 	char	**split;
 	int		i;
 	t_token	*new_token;
-	
+
 	if (!str || !*str)
 		return (1);
 	split = ft_split(str, ' ');
@@ -226,13 +225,14 @@ static int	has_quoted_segments(t_segment *segments)
 }
 
 static int	process_segments_with_splitting(t_segment *segments,
-	t_expander_creds *expander_creds, t_token **head, int *index)
+		t_expander_creds *expander_creds, t_token **head, int *index)
 {
 	t_segment	*current;
 	char		*segment_result;
 	char		*accumulated;
 	int			has_accumulated;
 	int			contains_quotes;
+	char		*temp;
 
 	current = segments;
 	accumulated = ft_strdup("");
@@ -254,7 +254,7 @@ static int	process_segments_with_splitting(t_segment *segments,
 			}
 			if (contains_quotes)
 			{
-				char *temp = ft_strjoin(accumulated, segment_result);
+				temp = ft_strjoin(accumulated, segment_result);
 				free(accumulated);
 				free(segment_result);
 				if (!temp)
@@ -283,9 +283,9 @@ static int	process_segments_with_splitting(t_segment *segments,
 				}
 				if (!append_split_tokens(head, index, segment_result))
 				{
-				    free(accumulated);
-				    free(segment_result);
-				    return (0);
+					free(accumulated);
+					free(segment_result);
+					return (0);
 				}
 				free(segment_result);
 			}
@@ -295,13 +295,14 @@ static int	process_segments_with_splitting(t_segment *segments,
 			if (current->type == SEGMENT_SINGLE_QUOTED)
 				segment_result = strip_quotes(current->value);
 			else if (current->type == SEGMENT_DOUBLE_QUOTED)
-				segment_result = dquote_expander(current->value, expander_creds);
+				segment_result = dquote_expander(current->value,
+						expander_creds);
 			if (!segment_result)
 			{
 				free(accumulated);
 				return (0);
 			}
-			char *temp = ft_strjoin(accumulated, segment_result);
+			temp = ft_strjoin(accumulated, segment_result);
 			free(accumulated);
 			free(segment_result);
 			if (!temp)
@@ -323,8 +324,8 @@ static int	process_segments_with_splitting(t_segment *segments,
 	return (1);
 }
 
-int splice_mixed_expansion(t_token **head, int index,
-	char *input, t_expander_creds *expander_creds)
+int	splice_mixed_expansion(t_token **head, int index, char *input,
+		t_expander_creds *expander_creds)
 {
 	t_segment	*segments;
 	t_token		*current;
@@ -348,8 +349,8 @@ int splice_mixed_expansion(t_token **head, int index,
 	}
 	delete_node(head, current->value);
 	new_index = index;
-	if (!process_segments_with_splitting(segments,
-			expander_creds, head, &new_index))
+	if (!process_segments_with_splitting(segments, expander_creds, head,
+			&new_index))
 	{
 		free_segment_list(segments);
 		return (0);

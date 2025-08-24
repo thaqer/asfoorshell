@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: daniah <daniah@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 17:17:26 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/24 18:07:47 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/25 01:42:09 by daniah           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ int	handle_heredoc_redir(char *delimiter, t_shell *shell)
 		return (-1);
 	if (pipe(pipe_fd) == -1)
 		return (-1);
-	// pipe_fd[1] = dup(STDIN_FILENO);
 	setup_signals(SIGNAL_HEREDOC);
 	while (1)
 	{
@@ -54,8 +53,8 @@ int	handle_heredoc_redir(char *delimiter, t_shell *shell)
 
 char	*expand_heredoc_line(char *line, t_shell *shell)
 {
-	t_expander_creds	creds;
-	char				*expanded_line;
+	t_expander_creds creds;
+	char *expanded_line;
 
 	if (!line || !shell)
 		return (NULL);

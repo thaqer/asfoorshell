@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execution.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: daniah <daniah@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 20:58:39 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/24 20:45:11 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/25 01:24:20 by daniah           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,59 +99,4 @@ int	execute_pipeline(t_ast *ast, t_shell *shell)
 	waitpid(right_pid, &status, 0);
 	cleanup_heredoc_fds(ast);
 	return (WEXITSTATUS(status));
-}
-
-void	preprocess_all_heredocs(t_ast *ast, t_shell *shell)
-{
-	t_redir	*current;
-
-	if (!ast)
-		return ;
-	if (ast->type == AST_SIMPLE_COMMAND && ast->s_simple_command.redirs)
-	{
-		current = ast->s_simple_command.redirs;
-		while (current)
-		{
-			if (current->type == REDIR_HEREDOC)
-			{
-				fprintf(stderr, "Executing pipeline...%s\n", current->target);
-				current->heredoc_fd = handle_heredoc_redir(current->target,
-						shell);
-				if (current->heredoc_fd == -2)
-					break ;
-			}
-			current = current->next;
-		}
-	}
-	else if (ast->type == AST_PIPELINE || ast->type == AST_LOGICAL_AND
-		|| ast->type == AST_LOGICAL_OR)
-	{
-		preprocess_all_heredocs(ast->s_binary.left, shell);
-		preprocess_all_heredocs(ast->s_binary.right, shell);
-	}
-	else if (ast->type == AST_SUBSHELL && ast->s_subshell.redirs)
-	{
-		current = ast->s_subshell.redirs;
-		while (current)
-		{
-			if (current->type == REDIR_HEREDOC)
-			{
-				fprintf(stderr, "ssssssssExecuting pipeline...%s\n", current->target);
-				current->heredoc_fd = handle_heredoc_redir(current->target,
-						shell);
-				if (current->heredoc_fd == -2)
-					break ;
-			}
-			current = current->next;
-		}
-		if (current && current->heredoc_fd != -2)
-			preprocess_all_heredocs(ast->s_subshell.child, shell);
-	}
-	if (g_sig_value == SIGINT)
-	{
-		if (current)
-			current->heredoc_fd = -1;
-		shell->status = 130;
-		setup_signals(SIGNAL_NONE);
-	}
 }

@@ -43,8 +43,8 @@ t_ast	*parse_logical_line(t_parser *parser)
 				"minishell:expected cmd after logic operator");
 		return (NULL);
 	}
-	while (!parser->error && (match(parser, TOKEN_AND)
-			|| match(parser, TOKEN_OR)))
+	while (!parser->error && (match(parser, TOKEN_AND) || match(parser,
+				TOKEN_OR)))
 	{
 		op = parser->current_token->type;
 		advance(parser);
