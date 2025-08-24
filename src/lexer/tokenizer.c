@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tbaniatt <tbaniatt@student.42amman.com>    +#+  +:+       +#+        */
+/*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 19:26:32 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/23 19:26:36 by tbaniatt         ###   ########.fr       */
+/*   Updated: 2025/08/24 12:07:44 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,7 +150,7 @@ void	normal_state_handler(t_separator_type sep_type, t_token **token_list,
 
 static t_token	*tokenize_norm_utils(t_token *token_list)
 {
-	write(2, "minishell: syntax error: unclosed quote\n", 36);
+	ft_putstr_fd("minishell: syntax error: unclosed quote \n", 2);
 	free_tok_list(token_list);
 	return (NULL);
 }

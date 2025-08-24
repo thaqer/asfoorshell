@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signals.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tbaniatt <tbaniatt@student.42amman.com>    +#+  +:+       +#+        */
+/*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 23:06:52 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/24 01:34:00 by tbaniatt         ###   ########.fr       */
+/*   Updated: 2025/08/24 17:32:03 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,9 @@ void	handle_signal_heredoc(int sig)
 {
 	if (sig == SIGINT)
 	{
-		g_sig_value = SIGINT;
-		close(STDIN_FILENO);
 		ft_putstr_fd("\n", 1);
+		close(STDIN_FILENO);
+		g_sig_value = SIGINT;
 	}
 	else if (sig == SIGPIPE)
 		g_sig_value = SIGPIPE;

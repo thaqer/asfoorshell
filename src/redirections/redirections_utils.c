@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirections_utils.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tbaniatt <tbaniatt@student.42.fr>          #+#  +:+       +#+        */
+/*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025-08-22 09:42:05 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025-08-22 09:42:05 by tbaniatt         ###   ########.fr       */
+/*   Created: 2025/08/22 09:42:05 by tbaniatt          #+#    #+#             */
+/*   Updated: 2025/08/24 18:19:42 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,15 @@ int	handle_heredocs_first(t_redir *redirs, t_shell *shell)
 				last_fd = handle_heredoc_redir(current->target, shell);
 			if (last_fd == -1)
 				return (-1);
+			if (last_fd == -2)
+				break;
 		}
 		current = current->next;
+	}
+	if (g_sig_value == SIGINT)
+	{
+		shell->status = 130;
+		setup_signals(SIGNAL_NONE);
 	}
 	apply_final_heredoc(last_fd);
 	return (0);

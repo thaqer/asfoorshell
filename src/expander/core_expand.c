@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   core_expand.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alrfa3i <alrfa3i@student.42.fr>            +#+  +:+       +#+        */
+/*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 08:41:03 by alrfa3i           #+#    #+#             */
-/*   Updated: 2025/08/22 08:59:17 by alrfa3i          ###   ########.fr       */
+/*   Updated: 2025/08/24 18:48:58 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,7 @@ char	*get_env_var_value( char *var_start, t_env *envp,
 			return (NULL);
 	}
 	type = param_determinant(**end_pos);
-	if (type == OTHER && **end_pos != '\0' && **end_pos != '\'')
+	if (type == OTHER && **end_pos != '\0' && **end_pos != '\'' && **end_pos != '\"')
 		(*end_pos)++;
 	return (variable_value);
 }

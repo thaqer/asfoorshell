@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tbaniatt <tbaniatt@student.42amman.com>    +#+  +:+       +#+        */
+/*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 19:53:25 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/22 08:21:55 by amaassaf         ###   ########.fr       */
+/*   Updated: 2025/08/24 18:54:38 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ int						ft_exit_argv(char **argv, t_shell *shell);
 int						ft_export_argv(char **argv, t_shell *shell);
 t_env					*new_env_node(const char *key, const char *value);
 int						set_env(t_shell *shell, const char *key,
-							const char *value);
+							const char *value, int *flag);
 int						parse_export_arg(char *arg, char **key, char **value);
 void					print_export_list(t_env *env);
 int						print_env(char **args, t_shell *shell);
@@ -46,7 +46,7 @@ void					end_cd_process(t_shell *shell, char *oldpwd, char *pwd);
 
 // Helper functions for export
 void					handle_value(char *value);
-void					veiled_key(char *key, t_shell *shell);
+void					veiled_key(char *key, t_shell *shell, int *flag);
 t_env					*find_env(char *key, t_env *env);
 
 // Cleanup and utility functions
@@ -57,16 +57,5 @@ void					free_env(t_env *env);
 // Error handling
 int						shell_error_message(char *message);
 
-// Table (lookup table) of all builtins
-// static t_builtin g_builtins[] = {
-//     {"echo", ft_echo_argv},
-//     {"cd", ft_cd_argv},
-//     {"pwd", ft_pwd},
-//     {"export", ft_export_argv},
-//     {"unset", ft_unset_argv},
-//     {"env", print_env},
-//     {"exit", ft_exit_argv},
-//     {NULL, NULL}
-// };
 
 #endif

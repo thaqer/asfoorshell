@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execution.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tbaniatt <tbaniatt@student.42amman.com>    +#+  +:+       +#+        */
+/*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 20:58:39 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/24 01:33:59 by tbaniatt         ###   ########.fr       */
+/*   Updated: 2025/08/24 19:08:27 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,9 +114,11 @@ void	preprocess_all_heredocs(t_ast *ast, t_shell *shell)
 		{
 			if (current->type == REDIR_HEREDOC)
 			{
-				fprintf(stderr, "Executing pipeline...%s\n", current->target);
+				fprintf(stderr, "2 Executing pipeline...%s\n", current->target);
 				current->heredoc_fd = handle_heredoc_redir(current->target,
 						shell);
+				if (current->heredoc_fd == -2)
+					break ;
 			}
 			current = current->next;
 		}
@@ -134,12 +136,21 @@ void	preprocess_all_heredocs(t_ast *ast, t_shell *shell)
 		{
 			if (current->type == REDIR_HEREDOC)
 			{
-				fprintf(stderr, "Executing pipeline...%s\n", current->target);
+				fprintf(stderr, "3 Executing pipeline...%s\n", current->target);
 				current->heredoc_fd = handle_heredoc_redir(current->target,
 						shell);
+				if (current->heredoc_fd == -2)
+					break ;
 			}
 			current = current->next;
 		}
-		preprocess_all_heredocs(ast->s_subshell.child, shell);
+		if (current->heredoc_fd != -2)
+			preprocess_all_heredocs(ast->s_subshell.child, shell);
+	}
+	if (g_sig_value == SIGINT)
+	{
+		current->heredoc_fd = -1;
+		shell->status = 130;
+		setup_signals(SIGNAL_NONE);
 	}
 }
