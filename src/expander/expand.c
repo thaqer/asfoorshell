@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/22 09:00:09 by alrfa3i           #+#    #+#             */
-/*   Updated: 2025/08/25 18:11:04 by dqaddomi         ###   ########.fr       */
+/*   Created: 2025/08/22 09:00:09 by dqaddomi          #+#    #+#             */
+/*   Updated: 2025/08/25 20:41:10 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,13 +82,11 @@ static int	process_token_expansion(t_token *cur, t_token **head, size_t index,
 {
 	char	*old_value;
 
-
 	if (word_all_single(cur->qflags) || word_all_double(cur->qflags))
 		return (handle_quoted_tokens(cur, expander_creds));
 	if (word_unquoted(cur->qflags))
 	{
 		old_value = cur->value;
-		printf("farah2\n");
 		cur->value = unquoted_variable_handler(cur->value, expander_creds);
 		free(old_value);
 		if (!cur->value)
@@ -120,7 +118,6 @@ int	expand_tokens(t_token **head, t_expander_creds *expander_creds)
 	{
 		if (cur->type == TOKEN_WORD)
 		{
-			// printf("Expanding token: value=%s, qflags=%u\n", cur->value, cur->qflags); // Debug line
 			result = process_token_expansion(cur, head, index, expander_creds);
 			if (result == 0)
 				return (0);

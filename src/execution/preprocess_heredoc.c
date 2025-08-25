@@ -3,16 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   preprocess_heredoc.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: daniah <daniah@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 01:24:07 by daniah            #+#    #+#             */
-/*   Updated: 2025/08/25 04:35:06 by daniah           ###   ########.fr       */
+/*   Updated: 2025/08/25 22:11:01 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-//try  ctr d after << 1 + ctr c and (echo $?)
 static void	preprocess_heredoc_redirs(t_redir *redirs, t_shell *shell)
 {
 	t_redir	*current;
@@ -49,7 +48,6 @@ static void	preprocess_subshell_heredocs(t_ast *ast, t_shell *shell)
 		current = current->next;
 	}
 	if (!current || (current && current->heredoc_fd != -2))
-		// cuz of ((cat) << 1 << 2) case
 		preprocess_all_heredocs(ast->s_subshell.child, shell);
 }
 

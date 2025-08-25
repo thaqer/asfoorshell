@@ -6,7 +6,7 @@
 /*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 15:29:04 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/25 17:47:49 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/25 22:06:37 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,23 +62,11 @@ int	initialize_shell(t_shell *shell, t_expander_creds *expander_creds,
 	return (0);
 }
 
-// void print_tokens(t_token *token)
-// {
-// 	int i = 0;
-// 	while (token)
-// 	{
-// 		printf("Token(value='%s', type=%s, qflags=%u)\n",
-// 			token->value,
-// 			token_type_to_string(token->type),
-// 			token->qflags);
-// 		i++;
-// 		token = token->next;
-// 	}
-	
-// }
 void	process_line(char *line, t_shell *shell, t_parser *parser,
 		t_expander_creds *expander_creds)
 {
+	int	i;
+
 	if (line && *line)
 		add_history(line);
 	shell->tokens = tokenize(line);
@@ -96,20 +84,20 @@ void	process_line(char *line, t_shell *shell, t_parser *parser,
 		shell->status = 2;
 	else
 		run_ast_if_no_signal(shell);
-	if (g_sig_value == SIGINT) // here to handle leaks (Block)
-    {
-        if (shell->ast_root)
-        {
-            free_ast(shell->ast_root);
-            shell->ast_root = NULL;
-        }
-        int i = 3;
-        while (i < 1024)
-        {
-            close(i);
-            i++;
-        }
-    }	
+	if (g_sig_value == SIGINT)
+	{
+		if (shell->ast_root)
+		{
+			free_ast(shell->ast_root);
+			shell->ast_root = NULL;
+		}
+		i = 3;
+		while (i < 1024)
+		{
+			close(i);
+			i++;
+		}
+	}
 	expander_creds->last_exit_status = shell->status;
 	free_tok_list(shell->tokens);
 	shell->tokens = NULL;

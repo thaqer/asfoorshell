@@ -6,13 +6,12 @@
 /*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 23:59:00 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/24 14:38:34 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/25 22:07:37 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-/* create a new env node */
 t_env	*new_env_node(const char *key, const char *value)
 {
 	t_env	*new;
@@ -51,7 +50,6 @@ static int	update_existing_env(t_env *node, const char *value, t_shell *shell)
 	return (0);
 }
 
-/* set or append an env */
 int	set_env(t_shell *shell, const char *key, const char *value, int *flag)
 {
 	t_env	*node;
@@ -62,7 +60,7 @@ int	set_env(t_shell *shell, const char *key, const char *value, int *flag)
 	node = find_env((char *)key, shell->env);
 	if (node)
 		return (update_existing_env(node, value, shell));
-	if (*flag != 1) // to not add invalid variable
+	if (*flag != 1)
 		new = new_env_node(key, value);
 	if (!new)
 		return (1);
@@ -78,7 +76,6 @@ int	set_env(t_shell *shell, const char *key, const char *value, int *flag)
 	return (0);
 }
 
-/* trim quotes if value surrounded */
 void	handle_value(char *value)
 {
 	size_t	len;
@@ -99,7 +96,6 @@ void	handle_value(char *value)
 	}
 }
 
-/* parse a single export argument */
 int	parse_export_arg(char *arg, char **key, char **value)
 {
 	char	*equal_sign;

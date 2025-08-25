@@ -6,7 +6,7 @@
 /*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 19:12:42 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/25 17:45:25 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/25 20:38:10 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,11 +42,11 @@ typedef struct s_shell
 	int			status;
 	int			sav_stdin;
 	int			sav_stdout;
+	int			single_q;
 	t_ast		*ast_root;
 	t_parser	*parser;
 	t_env		*env;
 	t_execution	*execution;
-	int		single_q;
 }				t_shell;
 
 void			setup_signals(int mode);

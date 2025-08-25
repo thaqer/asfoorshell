@@ -6,7 +6,7 @@
 /*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 12:49:56 by amaassaf          #+#    #+#             */
-/*   Updated: 2025/08/25 16:26:58 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/25 22:08:06 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,6 @@ void	free_tok_list(t_token *head)
 	}
 }
 
-// this function copies n bytes of s into a newly allocated
-// string (duplicate that accounts for a null character for termination -n + 1)
 char	*ft_strndup(const char *s, size_t n)
 {
 	size_t	size;
@@ -44,7 +42,6 @@ char	*ft_strndup(const char *s, size_t n)
 		*duplicate++ = *s++;
 	*duplicate = '\0';
 	return (saved_start);
-	// return (ft_substr(s, 0, n));
 }
 
 t_token	*create_token(char *value, t_token_type type, t_qflags flags)
@@ -54,10 +51,6 @@ t_token	*create_token(char *value, t_token_type type, t_qflags flags)
 	if (!value)
 		return (NULL);
 	token = malloc(sizeof(t_token));
-	// better to write it like this
-	// token = malloc(sizeof(*token));
-	// It allocates memory based on the type the pointer points to,
-	// which avoids mistakes if the type of token ever changes.
 	if (!token)
 		return (NULL);
 	token->value = ft_strdup(value);

@@ -34,6 +34,7 @@ SRC_FILES = \
     parser/parse_simple_cmd.c \
     parser/parser_core_helpers.c \
     parser/parser.c \
+    parser/parser_helpers.c \
     enviroment/enviroment.c \
     enviroment/enviroment_utils.c \
     enviroment/enviroment_utils_extra.c \
@@ -50,6 +51,13 @@ SRC_FILES = \
     expander/expand.c \
     expander/expander_utils.c \
     expander/mixed_expand.c \
+    expander/segment_utils.c \
+    expander/quote_handlers.c \
+    expander/quote_start_end.c \
+    expander/quote_processing.c \
+    expander/parse_segments.c \
+    expander/token_utils.c \
+    expander/segment_processing.c \
     expander/type_utils.c \
     redirections/redirections.c \
     redirections/redirections_utils.c \
