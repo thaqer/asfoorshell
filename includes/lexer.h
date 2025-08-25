@@ -40,7 +40,8 @@ typedef enum e_qflags
 	QF_ALL_SQ = 1 << 2,
 	QF_ALL_DQ = 1 << 3,
 	QF_MIXED = 1 << 4, /* mixture: quoted + unquoted, or both quote types */
-	QF_HD_QUOTED = 1 << 5
+	QF_HD_QUOTED = 1 << 5,
+	QF_EXPANDED = 1 << 6
 }					t_qflags;
 
 typedef struct s_token

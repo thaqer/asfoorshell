@@ -23,7 +23,7 @@ int	create_and_insert_token(t_token **head, int *index, char *str)
 {
 	t_token	*new_token;
 
-	new_token = create_token(str, TOKEN_WORD, QF_NONE);
+	new_token = create_token(str, TOKEN_WORD, QF_EXPANDED);
 	if (!new_token)
 		return (0);
 	if (!insert_at_index(head, *index, new_token))

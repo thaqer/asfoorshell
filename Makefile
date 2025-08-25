@@ -52,7 +52,6 @@ SRC_FILES = \
     expander/expander_utils.c \
     expander/mixed_expand.c \
     expander/segment_utils.c \
-    expander/quote_handlers.c \
     expander/quote_start_end.c \
     expander/quote_processing.c \
     expander/parse_segments.c \

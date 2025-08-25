@@ -55,14 +55,13 @@ static int	handle_quoted_tokens(t_token *cur, t_expander_creds *expander_creds)
 {
 	char	*old_value;
 
-	printf("quote detected\n");
 	if (word_all_single(cur->qflags))
 	{
 		old_value = cur->value;
 		cur->value = strip_quotes(cur->value);
 		free(old_value);
 		if (!word_hd_quote(cur->qflags))
-			cur->qflags = QF_NONE;
+			cur->qflags = QF_EXPANDED;
 	}
 	else if (word_all_double(cur->qflags))
 	{
@@ -72,7 +71,7 @@ static int	handle_quoted_tokens(t_token *cur, t_expander_creds *expander_creds)
 		if (!cur->value)
 			return (0);
 		if (!word_hd_quote(cur->qflags))
-			cur->qflags = QF_NONE;
+			cur->qflags = QF_EXPANDED;
 	}
 	return (1);
 }
@@ -82,6 +81,8 @@ static int	process_token_expansion(t_token *cur, t_token **head, size_t index,
 {
 	char	*old_value;
 
+	if (cur->qflags & QF_EXPANDED)
+		return (1);
 	if (word_all_single(cur->qflags) || word_all_double(cur->qflags))
 		return (handle_quoted_tokens(cur, expander_creds));
 	if (word_unquoted(cur->qflags))
@@ -97,7 +98,7 @@ static int	process_token_expansion(t_token *cur, t_token **head, size_t index,
 				return (0);
 		}
 	}
-	else if (word_mixed(cur->qflags) && QF_HAS_DQ == (cur->qflags & QF_HAS_DQ))
+	else if (word_mixed(cur->qflags))
 	{
 		if (!splice_mixed_expansion(head, index, cur->value, expander_creds))
 			return (0);
