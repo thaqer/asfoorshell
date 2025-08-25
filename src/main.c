@@ -6,7 +6,7 @@
 /*   By: daniah <daniah@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 15:29:04 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/25 00:49:28 by daniah           ###   ########.fr       */
+/*   Updated: 2025/08/25 12:57:10 by daniah           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,20 @@ void	process_line(char *line, t_shell *shell, t_parser *parser,
 		shell->status = 2;
 	else
 		run_ast_if_no_signal(shell);
+	if (g_sig_value == SIGINT) // here to handle leaks (Block)
+    {
+        if (shell->ast_root)
+        {
+            free_ast(shell->ast_root);
+            shell->ast_root = NULL;
+        }
+        int i = 3;
+        while (i < 1024)
+        {
+            close(i);
+            i++;
+        }
+    }	
 	expander_creds->last_exit_status = shell->status;
 	free_tok_list(shell->tokens);
 	shell->tokens = NULL;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   memory_cleanup.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tbaniatt <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: daniah <daniah@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 09:46:09 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/22 09:46:21 by tbaniatt         ###   ########.fr       */
+/*   Updated: 2025/08/25 13:02:11 by daniah           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	free_redirs(t_redir *redirs)
 	{
 		next = redirs->next;
 		free(redirs->target);
-		if (redirs->heredoc_fd != -1)
+		if (redirs->heredoc_fd > 0)
 			close(redirs->heredoc_fd);
 		free(redirs);
 		redirs = next;

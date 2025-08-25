@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: daniah <daniah@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 03:52:32 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/24 18:57:09 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/25 12:16:58 by daniah           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,13 @@ t_token				*tokenize(char *input);
 void				append_separator(t_token **head, t_separator_type type,
 						char **input_ref, char **start_ref);
 t_token_type		type_determinant(t_separator_type sep_type);
+t_separator_type	handle_double_char_sep(char *current_position);
+t_separator_type	is_separator(char *current_position);
+t_token				*get_prev_token(t_token *head);
+void				append_and_handle_failure(t_token **token_list, char *start_ref,
+						char *input_ref);
+void				normal_state_handler(t_separator_type sep_type, t_token **token_list,
+						char **start_ref, char **input_ref);
 
 //                               tok_utils.c
 t_token				*create_token(char *value, t_token_type type,

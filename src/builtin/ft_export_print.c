@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_export_print.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tbaniatt <tbaniatt@student.42amman.com>    +#+  +:+       +#+        */
+/*   By: daniah <daniah@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 00:40:00 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/16 00:28:49 by tbaniatt         ###   ########.fr       */
+/*   Updated: 2025/08/25 05:05:29 by daniah           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ static void	insert_sorted(t_env *arr[], int *n, t_env *node)
 
 	pos = *n;
 	while (pos > 0 && ft_strncmp(arr[pos - 1]->key, node->key, ft_strlen(arr[pos
-				- 1]->key) + 1) > 0)
+					- 1]->key) + 1) > 0)
 	{
 		arr[pos] = arr[pos - 1];
 		pos--;

@@ -6,13 +6,13 @@
 /*   By: daniah <daniah@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 01:24:07 by daniah            #+#    #+#             */
-/*   Updated: 2025/08/25 01:50:23 by daniah           ###   ########.fr       */
+/*   Updated: 2025/08/25 04:35:06 by daniah           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-//try to ctr d after << 1 + ctr c and (echo $?)
+//try  ctr d after << 1 + ctr c and (echo $?)
 static void	preprocess_heredoc_redirs(t_redir *redirs, t_shell *shell)
 {
 	t_redir	*current;

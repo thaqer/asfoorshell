@@ -24,7 +24,9 @@ HEADERS     = includes/minishell.h includes/lexer.h includes/parser.h
 SRC_FILES = \
     main.c \
     lexer/tokenizer.c \
+    lexer/tokenizer_utils.c \
     lexer/lexer_utils.c \
+    lexer/token_operations.c \
     parser/ast_node_constructors.c \
     parser/memory_cleanup.c \
     parser/parse_command_dispatcher.c \
@@ -42,6 +44,8 @@ SRC_FILES = \
     execution/logical_operators.c \
     execution/preprocess_heredoc.c \
     expander/core_expand.c \
+    expander/core_expand_utils.c \
+    expander/core_expand_helpers.c \
     expander/dispatcher_expander.c \
     expander/expand.c \
     expander/expander_utils.c \
