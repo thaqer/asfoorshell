@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execution_utils.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alalauty <alalauty@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 00:00:00 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/21 19:42:54 by alalauty         ###   ########.fr       */
+/*   Updated: 2025/08/25 13:23:44 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,11 @@ static void	execute_child_process(char *command_path, char **argv,
 	if (env_array)
 		ft_free_array(env_array);
 	if (errno == EACCES)
+	{
+		free(command_path);
+		cleanup(shell);
 		exit(126);
+	}
 	exit(127);
 }
 

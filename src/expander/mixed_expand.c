@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   mixed_expand.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: daniah <daniah@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 09:51:31 by alrfa3i           #+#    #+#             */
-/*   Updated: 2025/08/25 00:30:10 by daniah           ###   ########.fr       */
+/*   Updated: 2025/08/25 18:08:44 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ static t_segment	*parse_mixed_segments(char *input)
 			state = STATE_SQUOTE;
 			current++;
 		}
-		else if (*current == '\'' && state == STATE_SQUOTE)
+		else if (*current == '\'' && state == STATE_SQUOTE )
 		{
 			current++;
 			segment_value = ft_strndup(start, current - start);
@@ -209,7 +209,7 @@ static int	append_split_tokens(t_token **head, int *index, char *str)
 	return (1);
 }
 
-static int	has_quoted_segments(t_segment *segments)
+int	has_quoted_segments(t_segment *segments)
 {
 	t_segment	*current;
 
@@ -231,97 +231,61 @@ static int	process_segments_with_splitting(t_segment *segments,
 	char		*segment_result;
 	char		*accumulated;
 	int			has_accumulated;
-	int			contains_quotes;
 	char		*temp;
+	int	flag = 0;
 
 	current = segments;
 	accumulated = ft_strdup("");
 	has_accumulated = 0;
-	contains_quotes = has_quoted_segments(segments);
 	if (!accumulated)
 		return (0);
+
 	while (current)
 	{
 		segment_result = NULL;
-		if (current->type == SEGMENT_UNQUOTED)
+
+		if (current->type == SEGMENT_SINGLE_QUOTED)
 		{
-			segment_result = unquoted_variable_handler(current->value,
-					expander_creds);
+			segment_result = strip_quotes(current->value);
 			if (!segment_result)
 			{
 				free(accumulated);
-				return (0);
+				return 0;
 			}
-			if (contains_quotes)
-			{
-				temp = ft_strjoin(accumulated, segment_result);
-				free(accumulated);
-				free(segment_result);
-				if (!temp)
-					return (0);
-				accumulated = temp;
-				has_accumulated = 1;
-			}
-			else
-			{
-				if (has_accumulated && *accumulated)
-				{
-					if (!append_split_tokens(head, index, accumulated))
-					{
-						free(accumulated);
-						free(segment_result);
-						return (0);
-					}
-					free(accumulated);
-					accumulated = ft_strdup("");
-					if (!accumulated)
-					{
-						free(segment_result);
-						return (0);
-					}
-					has_accumulated = 0;
-				}
-				if (!append_split_tokens(head, index, segment_result))
-				{
-					free(accumulated);
-					free(segment_result);
-					return (0);
-				}
-				free(segment_result);
-			}
+			flag = 1;
 		}
-		else
+		else if (current->type == SEGMENT_DOUBLE_QUOTED)
 		{
-			if (current->type == SEGMENT_SINGLE_QUOTED)
-				segment_result = strip_quotes(current->value);
-			else if (current->type == SEGMENT_DOUBLE_QUOTED)
-				segment_result = dquote_expander(current->value,
-						expander_creds);
-			if (!segment_result)
-			{
-				free(accumulated);
-				return (0);
-			}
+			segment_result = dquote_expander(current->value, expander_creds);
+		}
+		else if (current->type == SEGMENT_UNQUOTED)
+			segment_result = unquoted_variable_handler(current->value, expander_creds);
+
+		if (segment_result)
+		{
 			temp = ft_strjoin(accumulated, segment_result);
 			free(accumulated);
 			free(segment_result);
 			if (!temp)
-				return (0);
+				return 0;
 			accumulated = temp;
 			has_accumulated = 1;
 		}
+
 		current = current->next;
 	}
+
 	if (has_accumulated && *accumulated)
 	{
 		if (!append_split_tokens(head, index, accumulated))
 		{
 			free(accumulated);
-			return (0);
+			return 0;
 		}
 	}
+
 	free(accumulated);
-	return (1);
+	return 1;
 }
 
 int	splice_mixed_expansion(t_token **head, int index, char *input,

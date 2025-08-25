@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: daniah <daniah@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 15:29:04 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/25 12:57:10 by daniah           ###   ########.fr       */
+/*   Updated: 2025/08/25 17:47:49 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,20 @@ int	initialize_shell(t_shell *shell, t_expander_creds *expander_creds,
 	return (0);
 }
 
+// void print_tokens(t_token *token)
+// {
+// 	int i = 0;
+// 	while (token)
+// 	{
+// 		printf("Token(value='%s', type=%s, qflags=%u)\n",
+// 			token->value,
+// 			token_type_to_string(token->type),
+// 			token->qflags);
+// 		i++;
+// 		token = token->next;
+// 	}
+	
+// }
 void	process_line(char *line, t_shell *shell, t_parser *parser,
 		t_expander_creds *expander_creds)
 {
