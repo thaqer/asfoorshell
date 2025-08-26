@@ -6,7 +6,7 @@
 /*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 08:16:38 by amaassaf          #+#    #+#             */
-/*   Updated: 2025/08/26 18:53:57 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/26 20:03:46 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ bool					allow_glob(unsigned int f);
 bool					word_hd_quote(unsigned int f);
 t_params				param_determinant(char c);
 char					*strip_quotes(char *str);
+char					*strip_all_outer_quotes(char *str);
 t_params				param_determinant(char c);
 int						expand_tokens(t_token **head,
 							t_expander_creds *expander_creds);

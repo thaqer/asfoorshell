@@ -6,7 +6,7 @@
 /*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 08:41:03 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/26 18:54:34 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/26 20:03:46 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ char	*init_expander(char *input_string, char **unquoted_str)
 {
 	char	*expanded_output;
 
-	*unquoted_str = strip_quotes(input_string);
+	*unquoted_str = strip_all_outer_quotes(input_string);
 	if (!*unquoted_str)
 		return (NULL);
 	expanded_output = ft_strdup("");

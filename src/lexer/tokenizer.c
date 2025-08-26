@@ -6,7 +6,7 @@
 /*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 19:26:32 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/25 17:47:33 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/26 20:03:46 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,11 @@ void	state_determinant(t_state *state, char **s_ref)
 	{
 		++(*s_ref);
 		if (*state == STATE_NORMAL && **s_ref == '\"')
+		{
 			++(*s_ref);
+			if (**s_ref == '\"')
+				--(*s_ref);
+		}
 		else if (*state == STATE_DQUOTE && **s_ref != '\"')
 			*state = STATE_NORMAL;
 		else
