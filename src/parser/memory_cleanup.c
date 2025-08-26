@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   memory_cleanup.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tbaniatt <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 09:46:09 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/22 09:46:21 by tbaniatt         ###   ########.fr       */
+/*   Updated: 2025/08/26 14:52:12 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,15 +20,13 @@ void	free_redirs(t_redir *redirs)
 	{
 		next = redirs->next;
 		free(redirs->target);
-		if (redirs->heredoc_fd != -1)
+		if (redirs->heredoc_fd >= 0)
 			close(redirs->heredoc_fd);
 		free(redirs);
 		redirs = next;
 	}
 }
 
-// When failing mid simple_command
-/* frees argv[0..argc-1] and the argv vector itself */
 void	free_partial_arguments(char **argv, int argc)
 {
 	int	i;
@@ -43,7 +41,6 @@ void	free_partial_arguments(char **argv, int argc)
 	free(argv);
 }
 
-/* frees a full NULL-terminated argv */
 void	free_argv(char **argv)
 {
 	int	i;
@@ -58,7 +55,6 @@ void	free_argv(char **argv)
 	free(argv);
 }
 
-/* recursive AST free (sketch) */
 void	free_ast(t_ast *node)
 {
 	if (!node)

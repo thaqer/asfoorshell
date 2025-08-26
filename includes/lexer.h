@@ -6,7 +6,7 @@
 /*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 03:52:32 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/24 18:57:09 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/25 20:37:30 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,8 @@ typedef enum e_qflags
 	QF_ALL_SQ = 1 << 2,
 	QF_ALL_DQ = 1 << 3,
 	QF_MIXED = 1 << 4, /* mixture: quoted + unquoted, or both quote types */
-	QF_HD_QUOTED = 1 << 5
+	QF_HD_QUOTED = 1 << 5,
+	QF_EXPANDED = 1 << 6
 }					t_qflags;
 
 typedef struct s_token
@@ -80,8 +81,14 @@ t_token				*tokenize(char *input);
 void				append_separator(t_token **head, t_separator_type type,
 						char **input_ref, char **start_ref);
 t_token_type		type_determinant(t_separator_type sep_type);
-
-//                               tok_utils.c
+t_separator_type	handle_double_char_sep(char *current_position);
+t_separator_type	is_separator(char *current_position);
+t_token				*get_prev_token(t_token *head);
+void				append_and_handle_failure(t_token **token_list,
+						char *start_ref, char *input_ref);
+void				normal_state_handler(t_separator_type sep_type,
+						t_token **token_list, char **start_ref,
+						char **input_ref);
 t_token				*create_token(char *value, t_token_type type,
 						t_qflags flags);
 t_token				*append(t_token **head, char *value, t_token_type type,

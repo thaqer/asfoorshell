@@ -32,8 +32,7 @@ static int	env_key_matches(char *env_key, char *key, size_t key_len)
 {
 	if (!env_key || !key)
 		return (0);
-	if (ft_strncmp(env_key, key, key_len) == 0
-		&& ft_strlen(env_key) == key_len)
+	if (ft_strncmp(env_key, key, key_len) == 0 && ft_strlen(env_key) == key_len)
 		return (1);
 	return (0);
 }

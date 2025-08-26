@@ -24,7 +24,9 @@ HEADERS     = includes/minishell.h includes/lexer.h includes/parser.h
 SRC_FILES = \
     main.c \
     lexer/tokenizer.c \
+    lexer/tokenizer_utils.c \
     lexer/lexer_utils.c \
+    lexer/token_operations.c \
     parser/ast_node_constructors.c \
     parser/memory_cleanup.c \
     parser/parse_command_dispatcher.c \
@@ -32,6 +34,7 @@ SRC_FILES = \
     parser/parse_simple_cmd.c \
     parser/parser_core_helpers.c \
     parser/parser.c \
+    parser/parser_helpers.c \
     enviroment/enviroment.c \
     enviroment/enviroment_utils.c \
     enviroment/enviroment_utils_extra.c \
@@ -40,11 +43,22 @@ SRC_FILES = \
     execution/execution_utils.c \
     execution/execute_ast_utils.c \
     execution/logical_operators.c \
+    execution/preprocess_heredoc.c \
     expander/core_expand.c \
+    expander/core_expand_utils.c \
+    expander/core_expand_helpers.c \
     expander/dispatcher_expander.c \
     expander/expand.c \
     expander/expander_utils.c \
     expander/mixed_expand.c \
+    expander/segment_utils.c \
+    expander/quote_start_end.c \
+    expander/quote_processing.c \
+    expander/parse_segments.c \
+    expander/parse_segments_utils.c \
+    expander/parse_segments_more_utils.c \
+    expander/token_utils.c \
+    expander/segment_processing.c \
     expander/type_utils.c \
     redirections/redirections.c \
     redirections/redirections_utils.c \
@@ -61,6 +75,7 @@ SRC_FILES = \
     signals.c \
     signals_utils.c \
     cleanup.c \
+    shell_utils.c \
 
 
 

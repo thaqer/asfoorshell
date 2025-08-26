@@ -6,7 +6,7 @@
 /*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 00:52:33 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/24 19:01:25 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/26 14:53:11 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int	execute_ast(t_ast *ast, t_shell *shell)
 
 static int	execute_subshell_perent(pid_t pid)
 {
-	int		status;
+	int	status;
 
 	setup_signals(SIGNAL_NONE);
 	waitpid(pid, &status, 0);
@@ -67,27 +67,28 @@ int	execute_simple_command(t_ast *ast, t_shell *shell)
 {
 	char	**argv;
 	int		result;
-	int		saved_stdin;
-	int		saved_stdout;
 
 	argv = ast->s_simple_command.argv;
 	result = save_and_redirect(ast->s_simple_command.redirs, shell,
-			&saved_stdin, &saved_stdout);
+			&shell->sav_stdin, &shell->sav_stdout);
 	if (result != 0)
 	{
-		restore_and_clear_std_fds(shell, saved_stdin, saved_stdout);
+		restore_and_clear_std_fds(shell, shell->sav_stdin, shell->sav_stdout);
 		return (result);
 	}
 	if (!argv || !argv[0])
 	{
-		restore_and_clear_std_fds(shell, saved_stdin, saved_stdout);
+		restore_and_clear_std_fds(shell, shell->sav_stdin, shell->sav_stdout);
 		return (0);
 	}
-	if (is_builtin_command(argv[0]) && g_sig_value == 0)
-		result = execute_builtin(argv, shell);
-	else if (g_sig_value == 0)
-		result = execute_external_command(argv, shell);
-	restore_and_clear_std_fds(shell, saved_stdin, saved_stdout);
+	if (g_sig_value == 0)
+	{
+		if (is_builtin_command(argv[0]))
+			result = execute_builtin(argv, shell);
+		else
+			result = execute_external_command(argv, shell);
+	}
+	restore_and_clear_std_fds(shell, shell->sav_stdin, shell->sav_stdout);
 	return (result);
 }
 

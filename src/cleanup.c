@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cleanup.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tbaniatt <tbaniatt@student.42amman.com>    +#+  +:+       +#+        */
+/*   By: daniah <daniah@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:05:01 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/20 21:16:23 by tbaniatt         ###   ########.fr       */
+/*   Updated: 2025/08/25 13:01:47 by daniah           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,11 +50,6 @@ void	cleanup(t_shell *shell)
 		shell->ast_root = NULL;
 	}
 }
-// if (shell->parser && shell->parser->errmsg)
-// {
-// 	// free(shell->parser->errmsg);
-// 	shell->parser->errmsg = NULL;
-// }
 
 void	free_env(t_env *env)
 {

@@ -56,7 +56,7 @@ static void	export_process(char *arg, t_shell *shell)
 
 int	ft_export_argv(char **input, t_shell *shell)
 {
-	int		i;
+	int	i;
 
 	if (!input || !input[0])
 		return (0);

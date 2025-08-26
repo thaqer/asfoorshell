@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/22 09:00:09 by alrfa3i           #+#    #+#             */
-/*   Updated: 2025/08/24 12:54:44 by dqaddomi         ###   ########.fr       */
+/*   Created: 2025/08/22 09:00:09 by dqaddomi          #+#    #+#             */
+/*   Updated: 2025/08/26 10:59:22 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ int	splice_unquoted_expansion(t_token **head, int index, char *str)
 	char	**split;
 	int		i;
 	t_token	*new_token;
+	int		j;
 
 	split = ft_split(str, ' ');
 	i = 0;
@@ -41,14 +42,66 @@ int	splice_unquoted_expansion(t_token **head, int index, char *str)
 		i++;
 		index++;
 	}
-	{
-		int j = 0;
-		while (split[j])
-			free(split[j++]);
-		free(split);
-	}
+	j = 0;
+	while (split[j])
+		free(split[j++]);
+	free(split);
 	if (i >= 1)
 		delete_node(head, str);
+	return (1);
+}
+
+static int	handle_quoted_tokens(t_token *cur, t_expander_creds *expander_creds)
+{
+	char	*old_value;
+
+	if (word_all_single(cur->qflags))
+	{
+		old_value = cur->value;
+		cur->value = strip_quotes(cur->value);
+		free(old_value);
+		if (!word_hd_quote(cur->qflags))
+			cur->qflags = QF_EXPANDED;
+	}
+	else if (word_all_double(cur->qflags))
+	{
+		old_value = cur->value;
+		cur->value = dquote_expander(cur->value, expander_creds);
+		free(old_value);
+		if (!cur->value)
+			return (0);
+		if (!word_hd_quote(cur->qflags))
+			cur->qflags = QF_EXPANDED;
+	}
+	return (1);
+}
+
+static int	process_token_expansion(t_token *cur, t_token **head, size_t index,
+		t_expander_creds *expander_creds)
+{
+	char	*old_value;
+
+	if (cur->qflags & QF_EXPANDED)
+		return (1);
+	if (word_all_single(cur->qflags) || word_all_double(cur->qflags))
+		return (handle_quoted_tokens(cur, expander_creds));
+	if (word_unquoted(cur->qflags))
+	{
+		old_value = cur->value;
+		cur->value = unquoted_variable_handler(cur->value, expander_creds);
+		free(old_value);
+		if (!cur->value)
+			return (0);
+		if (ft_strchr(cur->value, ' '))
+			if (!splice_unquoted_expansion(head, index, cur->value))
+				return (0);
+	}
+	else if (word_mixed(cur->qflags))
+	{
+		if (!splice_mixed_expansion(head, index, cur->value, expander_creds))
+			return (0);
+		return (2);
+	}
 	return (1);
 }
 
@@ -56,7 +109,7 @@ int	expand_tokens(t_token **head, t_expander_creds *expander_creds)
 {
 	t_token	*cur;
 	size_t	index;
-	char	*old_value;
+	int		result;
 
 	cur = *head;
 	index = 0;
@@ -64,48 +117,14 @@ int	expand_tokens(t_token **head, t_expander_creds *expander_creds)
 	{
 		if (cur->type == TOKEN_WORD)
 		{
-			if (word_all_single(cur->qflags))
+			result = process_token_expansion(cur, head, index, expander_creds);
+			if (result == 0)
+				return (0);
+			if (result == 2)
 			{
-				old_value = cur->value;
-				cur->value = strip_quotes(cur->value);
-				free(old_value);
-				if (!word_hd_quote(cur->qflags))
-					cur->qflags = QF_NONE;
-			}
-			else if (word_all_double(cur->qflags))
-			{
-				old_value = cur->value;
-				cur->value = dquote_expander(cur->value, expander_creds);
-				free(old_value);
-				if (!cur->value)
-					return (0);
-				if (!word_hd_quote(cur->qflags))
-					cur->qflags = QF_NONE;
-			}
-			else if (word_unquoted(cur->qflags))
-			{
-				old_value = cur->value;
-				cur->value = unquoted_variable_handler(cur->value,
-						expander_creds);
-				free(old_value);
-				if (!cur->value)
-					return (0);
-				
-				// Only splice if the expanded value contains spaces (indicating splitting is needed)
-				if (ft_strchr(cur->value, ' '))
-				{
-					if (!splice_unquoted_expansion(head, index, cur->value))
-						return (0);
-				}
-			}
-			else if (word_mixed(cur->qflags))
-			{
-				if (!splice_mixed_expansion(head, index, cur->value,
-						expander_creds))
-					return (0);
-				cur = *head; //I fixed invalid read for "l"s (Restart from *head after splice)Because splice changes the list
+				cur = *head;
 				index = 0;
-				continue;
+				continue ;
 			}
 		}
 		cur = cur->next;

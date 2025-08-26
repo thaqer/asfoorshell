@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tbaniatt <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 09:46:43 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/22 09:46:53 by tbaniatt         ###   ########.fr       */
+/*   Updated: 2025/08/25 22:14:45 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,68 +29,76 @@ t_ast	*parse_input_line(t_parser *parser)
 	return (root);
 }
 
-t_ast	*parse_logical_line(t_parser *parser)
+static t_ast	*handle_logical_operator(t_parser *parser, t_ast *left)
 {
-	t_ast			*left;
 	t_ast			*right;
 	t_token_type	op;
 
-	left = parse_pipeline(parser);
-	if (parser->error || !left)
+	op = parser->current_token->type;
+	advance(parser);
+	right = parse_pipeline(parser);
+	if (parser->error || !right)
 	{
-		if (match(parser, TOKEN_AND) || match(parser, TOKEN_OR))
-			set_parse_error(parser,
-				"minishell:expected cmd after logic operator");
+		set_parse_error(parser,
+			"minishell:expected cmd after logic operator");
+		free_ast(left);
 		return (NULL);
 	}
-	while (!parser->error && (match(parser, TOKEN_AND)
-			|| match(parser, TOKEN_OR)))
+	if (op == TOKEN_AND)
+		left = ast_create_binary(AST_LOGICAL_AND, left, right);
+	else
+		left = ast_create_binary(AST_LOGICAL_OR, left, right);
+	return (left);
+}
+
+t_ast	*parse_logical_line(t_parser *parser)
+{
+	t_ast	*left;
+
+	left = parse_pipeline(parser);
+	if (handle_parse_logical_error(parser, left))
+		return (NULL);
+	while (!parser->error && (match(parser, TOKEN_AND) || match(parser,
+				TOKEN_OR)))
 	{
-		op = parser->current_token->type;
-		advance(parser);
-		right = parse_pipeline(parser);
-		if (parser->error || !right)
-		{
-			set_parse_error(parser,
-				"minishell:expected cmd after logic operator");
-			free_ast(left);
+		left = handle_logical_operator(parser, left);
+		if (!left)
 			return (NULL);
-		}
-		if (op == TOKEN_AND)
-			left = ast_create_binary(AST_LOGICAL_AND, left, right);
-		else
-			left = ast_create_binary(AST_LOGICAL_OR, left, right);
 	}
 	if (parser->error)
 		return (NULL);
 	return (left);
 }
 
+static t_ast	*handle_pipe_operator(t_parser *parser, t_ast *left)
+{
+	t_ast	*right;
+
+	advance(parser);
+	right = parse_command(parser);
+	if (parser->error || !right)
+	{
+		set_parse_error(parser,
+			"minishell: syntax error: expected command after pipe");
+		free_ast(left);
+		return (NULL);
+	}
+	left = ast_create_binary(AST_PIPELINE, left, right);
+	return (left);
+}
+
 t_ast	*parse_pipeline(t_parser *parser)
 {
 	t_ast	*left;
-	t_ast	*right;
 
 	left = parse_command(parser);
-	if (parser->error || !left)
-	{
-		if (match(parser, TOKEN_PIPE))
-			set_parse_error(parser,
-				"minishell: syntax error: expected command after pipe");
+	if (handle_parse_pipeline_error(parser, left))
 		return (NULL);
-	}
 	while (!parser->error && match(parser, TOKEN_PIPE))
 	{
-		advance(parser);
-		right = parse_command(parser);
-		if (parser->error || !right)
-		{
-			set_parse_error(parser,
-				"minishell: syntax error: expected command after pipe");
-			free_ast(left);
+		left = handle_pipe_operator(parser, left);
+		if (!left)
 			return (NULL);
-		}
-		left = ast_create_binary(AST_PIPELINE, left, right);
 	}
 	if (parser->error)
 		return (NULL);

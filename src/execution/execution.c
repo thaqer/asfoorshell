@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execution.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: daniah <daniah@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 20:58:39 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/24 20:45:11 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/25 01:24:20 by daniah           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,32 @@ char	*find_command_in_path(char *cmd, t_shell *shell)
 	return (search_in_path_dirs(paths, cmd));
 }
 
+void	handle_left_pipeline(int *pipefd, t_ast *ast, t_shell *shell)
+{
+	int	ret;
+
+	setup_signals(SIGNAL_CHILD);
+	close(pipefd[0]);
+	dup2(pipefd[1], STDOUT_FILENO);
+	close(pipefd[1]);
+	ret = execute_ast(ast->s_binary.left, shell);
+	cleanup(shell);
+	exit(ret);
+}
+
+void	handle_right_pipeline(int *pipefd, t_ast *ast, t_shell *shell)
+{
+	int	ret;
+
+	setup_signals(SIGNAL_CHILD);
+	close(pipefd[1]);
+	dup2(pipefd[0], STDIN_FILENO);
+	close(pipefd[0]);
+	ret = execute_ast(ast->s_binary.right, shell);
+	cleanup(shell);
+	exit(ret);
+}
+
 int	execute_pipeline(t_ast *ast, t_shell *shell)
 {
 	int		pipefd[2];
@@ -73,52 +99,4 @@ int	execute_pipeline(t_ast *ast, t_shell *shell)
 	waitpid(right_pid, &status, 0);
 	cleanup_heredoc_fds(ast);
 	return (WEXITSTATUS(status));
-}
-
-static t_redir	*process_heredoc_list(t_redir *redirs, t_shell *shell)
-{
-	t_redir	*current;
-
-	current = redirs;
-	while (current)
-	{
-		if (current->type == REDIR_HEREDOC)
-		{
-			current->heredoc_fd = handle_heredoc_redir(current->target,
-					shell);
-			if (current->heredoc_fd == -2)
-				break ;
-		}
-		current = current->next;
-	}
-	return (current);
-}
-
-void	preprocess_all_heredocs(t_ast *ast, t_shell *shell)
-{
-	t_redir	*current;
-
-	if (!ast)
-		return ;
-	if (ast->type == AST_SIMPLE_COMMAND && ast->s_simple_command.redirs)
-		current = process_heredoc_list(ast->s_simple_command.redirs, shell);
-	else if (ast->type == AST_PIPELINE || ast->type == AST_LOGICAL_AND
-		|| ast->type == AST_LOGICAL_OR)
-	{
-		preprocess_all_heredocs(ast->s_binary.left, shell);
-		preprocess_all_heredocs(ast->s_binary.right, shell);
-	}
-	else if (ast->type == AST_SUBSHELL && ast->s_subshell.redirs)
-	{
-		current = process_heredoc_list(ast->s_subshell.redirs, shell);
-		if (current && current->heredoc_fd != -2)
-			preprocess_all_heredocs(ast->s_subshell.child, shell);
-	}
-	if (g_sig_value == SIGINT)
-	{
-		if (current)
-			current->heredoc_fd = -1;
-		shell->status = 130;
-		setup_signals(SIGNAL_NONE);
-	}
 }

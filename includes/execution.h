@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execution.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tbaniatt <tbaniatt@student.42amman.com>    +#+  +:+       +#+        */
+/*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 21:03:14 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/23 21:51:48 by tbaniatt         ###   ########.fr       */
+/*   Updated: 2025/08/26 14:59:14 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,9 +71,12 @@ void							handle_left_pipeline(int *pipefd, t_ast *ast,
 									t_shell *shell);
 void							handle_right_pipeline(int *pipefd, t_ast *ast,
 									t_shell *shell);
-void							preprocess_left_heredocs(t_ast *ast, t_shell *shell);
-void							preprocess_all_heredocs(t_ast *ast, t_shell *shell);
+void							preprocess_left_heredocs(t_ast *ast,
+									t_shell *shell);
+void							preprocess_all_heredocs(t_ast *ast,
+									t_shell *shell);
 void							cleanup_heredoc_fds(t_ast *ast);
+void							close_unused_fds(void);
 
 // signals
 void							setup_signals(int mode);

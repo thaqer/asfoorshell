@@ -28,7 +28,7 @@ t_ast	*parse_group(t_parser *parser)
 	return (inner);
 }
 
-t_ast	*clean_group(t_ast	*inner, t_redir	*redirs)
+t_ast	*clean_group(t_ast *inner, t_redir *redirs)
 {
 	free_ast(inner);
 	free_redirs(redirs);
