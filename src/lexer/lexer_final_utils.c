@@ -1,0 +1,40 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   lexer_final_utils.c                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tbaniatt <tbaniatt@student.42.fr>          #+#  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025-08-26 17:59:37 by tbaniatt          #+#    #+#             */
+/*   Updated: 2025-08-26 17:59:37 by tbaniatt         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+void	normal_state_handler(t_separator_type sep_type, t_token **token_list,
+		char **start_ref, char **input_ref)
+{
+	if (sep_type == SEP_NONE)
+	{
+		if (**input_ref)
+			(*input_ref)++;
+		if (!**input_ref)
+			append_and_handle_failure(token_list, *start_ref, *input_ref);
+	}
+	else
+	{
+		if ((*input_ref - *start_ref) != 0)
+		{
+			append_and_handle_failure(token_list, *start_ref, *input_ref);
+		}
+		if (sep_type != SEP_SPACE)
+		{
+			append_separator(token_list, sep_type, input_ref, start_ref);
+		}
+		else
+		{
+			*start_ref = ++(*input_ref);
+		}
+	}
+}

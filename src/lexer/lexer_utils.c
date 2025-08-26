@@ -84,3 +84,29 @@ t_token	*append(t_token **head, char *value, t_token_type type, t_qflags flags)
 	current->next = new_token;
 	return (new_token);
 }
+
+void	append_and_handle_failure(t_token **token_list, char *start_ref,
+		char *input_ref)
+{
+	char		*value;
+	t_qflags	flags;
+	t_token		*prev;
+
+	value = ft_strndup(start_ref, (input_ref - start_ref));
+	flags = compute_qflags_from_raw(value);
+	if (!append(token_list, value, TOKEN_WORD, flags))
+	{
+		free(value);
+		free_tok_list(*token_list);
+		exit(EXIT_FAILURE);
+	}
+	free(value);
+	prev = get_prev_token(*token_list);
+	if (!prev)
+		return ;
+	if (prev->type == TOKEN_HEREDOC)
+	{
+		if (prev->next->qflags & (QF_HAS_SQ | QF_HAS_DQ))
+			prev->next->qflags |= QF_HD_QUOTED;
+	}
+}

@@ -6,7 +6,7 @@
 /*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 21:35:00 by dqaddomi          #+#    #+#             */
-/*   Updated: 2025/08/25 21:37:54 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/26 20:31:35 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,4 +78,33 @@ int	has_quoted_segments(t_segment *segments)
 		current = current->next;
 	}
 	return (0);
+}
+
+char	*strip_all_outer_quotes(char *str)
+{
+	char	*current;
+	char	*temp;
+	size_t	len;
+
+	if (!str)
+		return (NULL);
+	current = ft_strdup(str);
+	if (!current)
+		return (NULL);
+	while (current)
+	{
+		len = ft_strlen(current);
+		if (len < 2)
+			break ;
+		if ((current[0] == '"' && current[len - 1] == '"')
+			|| (current[0] == '\'' && current[len - 1] == '\''))
+		{
+			temp = ft_strndup(current + 1, len - 2);
+			free(current);
+			current = temp;
+		}
+		else
+			break ;
+	}
+	return (current);
 }
