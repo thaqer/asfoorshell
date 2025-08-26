@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   core_expand.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tbaniatt <tbaniatt@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 08:41:03 by alrfa3i           #+#    #+#             */
-/*   Updated: 2025/08/25 15:11:21 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/26 08:26:26 by tbaniatt         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ char	*get_env_var_value(char *var_start, t_env *envp, char **end_pos)
 {
 	char		*variable_name;
 	char		*variable_value;
-	t_params	type;
 
 	variable_name = extract_variable_name(var_start, end_pos);
 	if (!variable_name)
@@ -41,10 +40,6 @@ char	*get_env_var_value(char *var_start, t_env *envp, char **end_pos)
 		if (!variable_value)
 			return (NULL);
 	}
-	type = param_determinant(**end_pos);
-	if (type == OTHER && **end_pos != '\0' && **end_pos != '\''
-		&& **end_pos != '\"')
-		(*end_pos)++;
 	return (variable_value);
 }
 
