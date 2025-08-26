@@ -13,89 +13,42 @@
 #include "lexer.h"
 #include "minishell.h"
 
+static void	handle_single_quote_utils(t_state *state, char **s_ref)
+{
+	++(*s_ref);
+	if (*state == STATE_NORMAL && **s_ref == '\'')
+		++(*s_ref);
+	else if (*state == STATE_SQUOTE && **s_ref != '\'')
+		*state = STATE_NORMAL;
+	else
+		*state = STATE_SQUOTE;
+	if (*state == STATE_NORMAL && **s_ref == '\"')
+		*state = STATE_DQUOTE;
+}
+
+static void	handle_double_quote_utils(t_state *state, char **s_ref)
+{
+	++(*s_ref);
+	if (*state == STATE_NORMAL && **s_ref == '\"')
+	{
+		++(*s_ref);
+		if (**s_ref == '\"')
+			--(*s_ref);
+	}
+	else if (*state == STATE_DQUOTE && **s_ref != '\"')
+		*state = STATE_NORMAL;
+	else
+		*state = STATE_DQUOTE;
+	if (*state == STATE_NORMAL && **s_ref == '\'')
+		*state = STATE_SQUOTE;
+}
+
 void	state_determinant(t_state *state, char **s_ref)
 {
 	if (**s_ref == '\'' && *state != STATE_DQUOTE)
-	{
-		++(*s_ref);
-		if (*state == STATE_NORMAL && **s_ref == '\'')
-			++(*s_ref);
-		else if (*state == STATE_SQUOTE && **s_ref != '\'')
-			*state = STATE_NORMAL;
-		else
-			*state = STATE_SQUOTE;
-		if (*state == STATE_NORMAL && **s_ref == '\"')
-			*state = STATE_DQUOTE;
-	}
+		handle_single_quote_utils(state, s_ref);
 	else if (**s_ref == '\"' && *state != STATE_SQUOTE)
-	{
-		++(*s_ref);
-		if (*state == STATE_NORMAL && **s_ref == '\"')
-		{
-			++(*s_ref);
-			if (**s_ref == '\"')
-				--(*s_ref);
-		}
-		else if (*state == STATE_DQUOTE && **s_ref != '\"')
-			*state = STATE_NORMAL;
-		else
-			*state = STATE_DQUOTE;
-		if (*state == STATE_NORMAL && **s_ref == '\'')
-			*state = STATE_SQUOTE;
-	}
-}
-
-void	append_and_handle_failure(t_token **token_list, char *start_ref,
-		char *input_ref)
-{
-	char		*value;
-	t_qflags	flags;
-	t_token		*prev;
-
-	value = ft_strndup(start_ref, (input_ref - start_ref));
-	flags = compute_qflags_from_raw(value);
-	if (!append(token_list, value, TOKEN_WORD, flags))
-	{
-		free(value);
-		free_tok_list(*token_list);
-		exit(EXIT_FAILURE);
-	}
-	free(value);
-	prev = get_prev_token(*token_list);
-	if (!prev)
-		return ;
-	if (prev->type == TOKEN_HEREDOC)
-	{
-		if (prev->next->qflags & (QF_HAS_SQ | QF_HAS_DQ))
-			prev->next->qflags |= QF_HD_QUOTED;
-	}
-}
-
-void	normal_state_handler(t_separator_type sep_type, t_token **token_list,
-		char **start_ref, char **input_ref)
-{
-	if (sep_type == SEP_NONE)
-	{
-		if (**input_ref)
-			(*input_ref)++;
-		if (!**input_ref)
-			append_and_handle_failure(token_list, *start_ref, *input_ref);
-	}
-	else
-	{
-		if ((*input_ref - *start_ref) != 0)
-		{
-			append_and_handle_failure(token_list, *start_ref, *input_ref);
-		}
-		if (sep_type != SEP_SPACE)
-		{
-			append_separator(token_list, sep_type, input_ref, start_ref);
-		}
-		else
-		{
-			*start_ref = ++(*input_ref);
-		}
-	}
+		handle_double_quote_utils(state, s_ref);
 }
 
 static t_token	*tokenize_norm_utils(t_token *token_list)

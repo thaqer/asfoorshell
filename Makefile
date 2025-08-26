@@ -27,6 +27,7 @@ SRC_FILES = \
     lexer/tokenizer_utils.c \
     lexer/lexer_utils.c \
     lexer/token_operations.c \
+    lexer/lexer_final_utils.c \
     parser/ast_node_constructors.c \
     parser/memory_cleanup.c \
     parser/parse_command_dispatcher.c \
