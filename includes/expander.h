@@ -6,7 +6,7 @@
 /*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 08:16:38 by amaassaf          #+#    #+#             */
-/*   Updated: 2025/08/26 18:33:28 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/26 18:53:57 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,24 +84,12 @@ char					*process_dollar_expansion(char *output,
 							t_expander_creds *expander_creds);
 char					*process_literal_segment(char *output, char *start,
 							char *current, char *unquoted_str);
-char					*process_remaining_literal(char *output, char *start,
-							char *current, char *unquoted_str);
-char					*expansion_loop(char *output, char *unquoted_str,
-							t_expander_creds *expander_creds);
 char					*handle_dollar_type(char *output, t_params type,
 							char **pos, t_expander_creds *expander_creds);
 char					*get_env_var_value(char *var_start, t_env *envp,
 							char **end_pos);
 char					*expand_env_variable(char *output, char *var_start,
 							t_env *envp, char **end_pos);
-char					*expand_numeric_value(char *output, char **pos,
-							char *program_name);
-char					*handle_dollar_type(char *output, t_params type,
-							char **pos, t_expander_creds *expander_creds);
-char					*process_dollar_expansion(char *output,
-							char **current_pos,
-							t_expander_creds *expander_creds);
-char					*init_expander(char *input_string, char **unquoted_str);
 char					*process_remaining_literal(char *output, char *start,
 							char *current, char *unquoted_str);
 char					*expansion_loop(char *output, char *unquoted_str,
@@ -158,8 +146,6 @@ int						add_quoted_segment(t_segment **segments, char *start,
 int						handle_remaining_segment(t_segment **segments,
 							char *start, char *current, t_state state);
 /* parse_segments_more_utils.c */
-int						handle_single_quote(t_segment **segments,
-							char **start, char **current, t_state *state);
 int						handle_double_quote(t_segment **segments,
 							char **start, char **current, t_state *state);
 
