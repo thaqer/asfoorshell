@@ -6,7 +6,7 @@
 /*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 19:26:32 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/26 20:03:46 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/26 21:34:14 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,30 +16,38 @@
 static void	handle_single_quote_utils(t_state *state, char **s_ref)
 {
 	++(*s_ref);
+	if (!**s_ref)
+		return ;
 	if (*state == STATE_NORMAL && **s_ref == '\'')
+	{
 		++(*s_ref);
+		if (!**s_ref)
+			return ;
+	}
 	else if (*state == STATE_SQUOTE && **s_ref != '\'')
 		*state = STATE_NORMAL;
 	else
 		*state = STATE_SQUOTE;
-	if (*state == STATE_NORMAL && **s_ref == '\"')
+	if (*state == STATE_NORMAL && **s_ref && **s_ref == '\"')
 		*state = STATE_DQUOTE;
 }
 
 static void	handle_double_quote_utils(t_state *state, char **s_ref)
 {
 	++(*s_ref);
+	if (!**s_ref)
+		return ;
 	if (*state == STATE_NORMAL && **s_ref == '\"')
 	{
 		++(*s_ref);
-		if (**s_ref == '\"')
+		if (**s_ref && **s_ref == '\"')
 			--(*s_ref);
 	}
 	else if (*state == STATE_DQUOTE && **s_ref != '\"')
 		*state = STATE_NORMAL;
 	else
 		*state = STATE_DQUOTE;
-	if (*state == STATE_NORMAL && **s_ref == '\'')
+	if (*state == STATE_NORMAL && **s_ref && **s_ref == '\'')
 		*state = STATE_SQUOTE;
 }
 
@@ -78,7 +86,7 @@ t_token	*tokenize(char *input)
 		sep_type = is_separator(input);
 		if (state == STATE_NORMAL)
 			normal_state_handler(sep_type, &token_list, &start, &input);
-		else
+		else if (*input)
 			input++;
 	}
 	if (state != STATE_NORMAL)

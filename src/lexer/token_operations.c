@@ -6,7 +6,7 @@
 /*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 10:55:00 by daniah            #+#    #+#             */
-/*   Updated: 2025/08/26 19:23:14 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/26 21:39:18 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,23 +82,22 @@ int	insert_at_index(t_token **head, size_t index, t_token *new_node)
 
 static void	scan_quotes(char **s, int *has_sq, int *has_dq, int *unquoted)
 {
+	char	quote;
+
 	while (**s)
 	{
-		if (**s == '\'')
+		if (**s == '\'' || **s == '"')
 		{
-			*has_sq = 1;
+			quote = **s;
+			if (quote == '\'')
+				*has_sq = 1;
+			else
+				*has_dq = 1;
 			(*s)++;
-			while (**s != '\'')
+			while (**s && **s != quote)
 				(*s)++;
-			(*s)++;
-		}
-		else if (**s == '"')
-		{
-			*has_dq = 1;
-			(*s)++;
-			while (**s != '"')
+			if (**s)
 				(*s)++;
-			(*s)++;
 		}
 		else
 		{
