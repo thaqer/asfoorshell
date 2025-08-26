@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expand.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tbaniatt <tbaniatt@student.42amman.com>    +#+  +:+       +#+        */
+/*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 09:00:09 by dqaddomi          #+#    #+#             */
-/*   Updated: 2025/08/26 08:42:06 by tbaniatt         ###   ########.fr       */
+/*   Updated: 2025/08/26 10:59:22 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,10 +93,8 @@ static int	process_token_expansion(t_token *cur, t_token **head, size_t index,
 		if (!cur->value)
 			return (0);
 		if (ft_strchr(cur->value, ' '))
-		{
 			if (!splice_unquoted_expansion(head, index, cur->value))
 				return (0);
-		}
 	}
 	else if (word_mixed(cur->qflags))
 	{

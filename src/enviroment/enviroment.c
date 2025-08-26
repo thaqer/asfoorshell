@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   enviroment.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tbaniatt <tbaniatt@student.42amman.com>    +#+  +:+       +#+        */
+/*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 21:01:15 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/19 20:38:58 by tbaniatt         ###   ########.fr       */
+/*   Updated: 2025/08/26 14:13:23 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,10 @@ char	*get_env_value(char *key, t_env *env)
 		if (ft_strncmp(env->key, key, ft_strlen(key)) == 0
 			&& ft_strlen(env->key) == ft_strlen(key))
 		{
-			return (ft_strdup(env->value));
+			if (env->value)
+				return (ft_strdup(env->value));
+			else
+				return (ft_strdup(""));
 		}
 		env = env->next;
 	}

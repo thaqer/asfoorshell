@@ -26,8 +26,8 @@ char	*expand_numeric_value(char *output, char **pos, char *program_name)
 
 char	*get_env_var_value(char *var_start, t_env *envp, char **end_pos)
 {
-	char		*variable_name;
-	char		*variable_value;
+	char	*variable_name;
+	char	*variable_value;
 
 	variable_name = extract_variable_name(var_start, end_pos);
 	if (!variable_name)

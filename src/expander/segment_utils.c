@@ -32,8 +32,7 @@ t_segment	*create_segment(char *value, t_segment_type type)
 	return (segment);
 }
 
-t_segment	*append_segment(t_segment **head, char *value,
-		t_segment_type type)
+t_segment	*append_segment(t_segment **head, char *value, t_segment_type type)
 {
 	t_segment	*new_segment;
 	t_segment	*current;

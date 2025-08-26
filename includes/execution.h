@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execution.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: daniah <daniah@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 21:03:14 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/25 00:21:54 by daniah           ###   ########.fr       */
+/*   Updated: 2025/08/26 14:59:14 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@ void							preprocess_left_heredocs(t_ast *ast,
 void							preprocess_all_heredocs(t_ast *ast,
 									t_shell *shell);
 void							cleanup_heredoc_fds(t_ast *ast);
+void							close_unused_fds(void);
 
 // signals
 void							setup_signals(int mode);

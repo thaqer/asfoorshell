@@ -55,6 +55,8 @@ SRC_FILES = \
     expander/quote_start_end.c \
     expander/quote_processing.c \
     expander/parse_segments.c \
+    expander/parse_segments_utils.c \
+    expander/parse_segments_more_utils.c \
     expander/token_utils.c \
     expander/segment_processing.c \
     expander/type_utils.c \

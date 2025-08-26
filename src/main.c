@@ -6,37 +6,11 @@
 /*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 15:29:04 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/25 22:06:37 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/26 17:28:25 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
-
-const char	*token_type_to_string(t_token_type type)
-{
-	if (type == TOKEN_WORD)
-		return ("WORD");
-	else if (type == TOKEN_PIPE)
-		return ("PIPE");
-	else if (type == TOKEN_REDIRECT_IN)
-		return ("REDIRECT_IN");
-	else if (type == TOKEN_REDIRECT_OUT)
-		return ("REDIRECT_OUT");
-	else if (type == TOKEN_APPEND)
-		return ("APPEND");
-	else if (type == TOKEN_HEREDOC)
-		return ("HEREDOC");
-	else if (type == TOKEN_AND)
-		return ("AND");
-	else if (type == TOKEN_OR)
-		return ("OR");
-	else if (type == TOKEN_OPEN_PAREN)
-		return ("OPEN_PAREN");
-	else if (type == TOKEN_CLOSE_PAREN)
-		return ("CLOSE_PAREN");
-	else
-		return ("UNKNOWN");
-}
 
 int	initialize_shell(t_shell *shell, t_expander_creds *expander_creds,
 		char **argv, char **environment)
@@ -62,11 +36,27 @@ int	initialize_shell(t_shell *shell, t_expander_creds *expander_creds,
 	return (0);
 }
 
+static void	cleanup_line(t_shell *shell,
+		t_expander_creds *expander_creds, char *line)
+{
+	if (g_sig_value == SIGINT)
+	{
+		if (shell->ast_root)
+		{
+			free_ast(shell->ast_root);
+			shell->ast_root = NULL;
+		}
+		close_unused_fds();
+	}
+	expander_creds->last_exit_status = shell->status;
+	free_tok_list(shell->tokens);
+	shell->tokens = NULL;
+	free(line);
+}
+
 void	process_line(char *line, t_shell *shell, t_parser *parser,
 		t_expander_creds *expander_creds)
 {
-	int	i;
-
 	if (line && *line)
 		add_history(line);
 	shell->tokens = tokenize(line);
@@ -84,24 +74,7 @@ void	process_line(char *line, t_shell *shell, t_parser *parser,
 		shell->status = 2;
 	else
 		run_ast_if_no_signal(shell);
-	if (g_sig_value == SIGINT)
-	{
-		if (shell->ast_root)
-		{
-			free_ast(shell->ast_root);
-			shell->ast_root = NULL;
-		}
-		i = 3;
-		while (i < 1024)
-		{
-			close(i);
-			i++;
-		}
-	}
-	expander_creds->last_exit_status = shell->status;
-	free_tok_list(shell->tokens);
-	shell->tokens = NULL;
-	free(line);
+	cleanup_line(shell, expander_creds, line);
 }
 
 void	exit_shell(t_shell *shell)

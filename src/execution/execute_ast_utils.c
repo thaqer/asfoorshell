@@ -6,11 +6,23 @@
 /*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 00:00:00 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/24 17:47:56 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/26 17:29:46 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
+
+void	close_unused_fds(void)
+{
+	int	i;
+
+	i = 3;
+	while (i < 1024)
+	{
+		close(i);
+		i++;
+	}
+}
 
 void	restore_std_fds(int saved_stdin, int saved_stdout)
 {

@@ -18,8 +18,8 @@ int	handle_quote_start(t_quote_params *params, t_state new_state)
 
 	if (*params->current > *params->start)
 	{
-		segment_value = ft_strndup(*params->start,
-				*params->current - *params->start);
+		segment_value = ft_strndup(*params->start, *params->current
+				- *params->start);
 		if (!append_segment(params->segments, segment_value, SEGMENT_UNQUOTED))
 		{
 			free(segment_value);
@@ -39,8 +39,8 @@ int	handle_quote_end(t_quote_params *params, t_segment_type seg_type)
 	char	*segment_value;
 
 	(*params->current)++;
-	segment_value = ft_strndup(*params->start,
-			*params->current - *params->start);
+	segment_value = ft_strndup(*params->start, *params->current
+			- *params->start);
 	if (!append_segment(params->segments, segment_value, seg_type))
 	{
 		free(segment_value);
@@ -62,8 +62,8 @@ static t_segment_type	get_segment_type(t_state state)
 	return (SEGMENT_DOUBLE_QUOTED);
 }
 
-int	handle_final_segment(t_segment **segments, char *start,
-		char *current, t_state state)
+int	handle_final_segment(t_segment **segments, char *start, char *current,
+		t_state state)
 {
 	char			*segment_value;
 	t_segment_type	seg_type;

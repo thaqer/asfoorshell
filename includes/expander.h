@@ -6,7 +6,7 @@
 /*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 08:16:38 by amaassaf          #+#    #+#             */
-/*   Updated: 2025/08/25 22:05:55 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/26 18:33:28 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,8 +121,6 @@ int						handle_quote_start(t_quote_params *params,
 							t_state new_state);
 int						handle_quote_end(t_quote_params *params,
 							t_segment_type seg_type);
-int						handle_final_segment(t_segment **segments, char *start,
-							char *current, t_state state);
 /* quote_processing.c */
 int						handle_quote_character(t_quote_params *params,
 							char quote_char);
@@ -148,5 +146,21 @@ int						finalize_tokens(char *accumulated, t_token **head,
 int						process_segments_with_splitting(t_segment *segments,
 							t_expander_creds *expander_creds, t_token **head,
 							int *index);
+/* parse_segments_utils.c */
+int						handle_quote_char(t_quote_params *params,
+							char quote_char);
+int						process_char(t_segment **segments, char **start,
+							char **current, t_state *state);
+int						add_unquoted_segment(t_segment **segments,
+							char *start, char *current);
+int						add_quoted_segment(t_segment **segments, char *start,
+							char *current, t_segment_type type);
+int						handle_remaining_segment(t_segment **segments,
+							char *start, char *current, t_state state);
+/* parse_segments_more_utils.c */
+int						handle_single_quote(t_segment **segments,
+							char **start, char **current, t_state *state);
+int						handle_double_quote(t_segment **segments,
+							char **start, char **current, t_state *state);
 
 #endif

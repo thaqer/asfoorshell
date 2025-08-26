@@ -6,7 +6,7 @@
 /*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 22:00:00 by dqaddomi          #+#    #+#             */
-/*   Updated: 2025/08/25 22:05:55 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/26 18:03:47 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,8 @@ int	handle_quote_character(t_quote_params *params, char quote_char)
 	return (1);
 }
 
-int	process_character(t_segment **segments, char **start,
-		char **current, t_state *state)
+int	process_character(t_segment **segments, char **start, char **current,
+		t_state *state)
 {
 	t_quote_params	params;
 	int				result;
@@ -53,13 +53,14 @@ int	process_character(t_segment **segments, char **start,
 		params.state = state;
 		result = handle_quote_character(&params, **current);
 		if (result == 0)
+		{
+			(*current)++;
 			return (0);
+		}
 		if (result == 2)
 			return (2);
-	}
-	else
-	{
-		(*current)++;
+		else
+			(*current)++;
 	}
 	return (1);
 }

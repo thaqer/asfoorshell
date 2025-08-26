@@ -6,7 +6,7 @@
 /*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 00:00:00 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/25 13:23:44 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/26 17:29:32 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ static void	execute_child_process(char *command_path, char **argv,
 	char	**env_array;
 
 	setup_signals(SIGNAL_CHILD);
+	close_unused_fds();
 	env_array = env_list_to_array(shell->env);
 	execve(command_path, argv, env_array);
 	perror("execve");
