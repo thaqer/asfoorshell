@@ -16,8 +16,7 @@ static int	check_logical_error(t_parser *parser)
 {
 	if (match(parser, TOKEN_AND) || match(parser, TOKEN_OR))
 	{
-		set_parse_error(parser,
-			"minishell:expected cmd after logic operator");
+		set_parse_error(parser, "minishell:expected cmd after logic operator");
 		return (1);
 	}
 	return (0);

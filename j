@@ -1,0 +1,15 @@
+includes$
+j$
+l$
+libft$
+Makefile$
+minishell$
+obj$
+readline_curses.supp$
+README.md$
+src$
+test_case.c$
+test_mixed.txt$
+test_unclosed.txt$
+x$
+z$

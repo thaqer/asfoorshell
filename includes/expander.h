@@ -6,7 +6,7 @@
 /*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 08:16:38 by dqaddomi          #+#    #+#             */
-/*   Updated: 2025/08/27 12:07:45 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/27 12:46:21 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,8 +113,6 @@ int						handle_quote_end(t_quote_params *params,
 /* quote_processing.c */
 int						handle_quote_character(t_quote_params *params,
 							char quote_char);
-int						process_character(t_segment **segments, char **start,
-							char **current, t_state *state);
 t_segment				*parse_mixed_segments(char *input);
 void					cleanup_split_array(char **split, int start_index);
 int						create_and_insert_token(t_token **head, int *index,

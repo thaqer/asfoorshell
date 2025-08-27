@@ -6,7 +6,7 @@
 /*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 05:10:00 by daniah            #+#    #+#             */
-/*   Updated: 2025/08/26 21:13:50 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/27 17:42:16 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,10 @@ t_separator_type	handle_double_char_sep(char *current_position)
 		return (SEP_AND);
 	else if (*current_position == '|')
 		return (SEP_OR);
+	else if (*current_position == '\'')
+		return (SEP_SQUOTE);
+	else if (*current_position == '\"')
+		return (SEP_DQUOTE);
 	else
 		return (SEP_NONE);
 }
@@ -37,10 +41,6 @@ t_separator_type	is_separator(char *current_position)
 		return (SEP_SPACE);
 	else if (*current_position == '|')
 		return (SEP_PIPE);
-	else if (*current_position == '\'')
-		return (SEP_SQUOTE);
-	else if (*current_position == '\"')
-		return (SEP_DQUOTE);
 	else if (*current_position == '>')
 		return (SEP_REDIRECT_OUT);
 	else if (*current_position == '<')
@@ -49,6 +49,10 @@ t_separator_type	is_separator(char *current_position)
 		return (SEP_OPEN_PAREN);
 	else if (*current_position == ')')
 		return (SEP_CLOSE_PAREN);
+	else if (*current_position == '\'')
+		return (SEP_SQUOTE);
+	else if (*current_position == '\"')
+		return (SEP_DQUOTE);
 	else
 		return (SEP_NONE);
 }

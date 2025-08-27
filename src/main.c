@@ -6,7 +6,7 @@
 /*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 15:29:04 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/26 17:28:25 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/27 17:57:41 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,8 @@ int	initialize_shell(t_shell *shell, t_expander_creds *expander_creds,
 	return (0);
 }
 
-static void	cleanup_line(t_shell *shell,
-		t_expander_creds *expander_creds, char *line)
+static void	cleanup_line(t_shell *shell, t_expander_creds *expander_creds,
+		char *line)
 {
 	if (g_sig_value == SIGINT)
 	{

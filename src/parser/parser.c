@@ -39,8 +39,7 @@ static t_ast	*handle_logical_operator(t_parser *parser, t_ast *left)
 	right = parse_pipeline(parser);
 	if (parser->error || !right)
 	{
-		set_parse_error(parser,
-			"minishell:expected cmd after logic operator");
+		set_parse_error(parser, "minishell:expected cmd after logic operator");
 		free_ast(left);
 		return (NULL);
 	}

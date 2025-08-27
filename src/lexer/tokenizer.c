@@ -6,14 +6,14 @@
 /*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 19:26:32 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/27 12:00:51 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/27 17:40:45 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "lexer.h"
 #include "minishell.h"
 
-static void	handle_dquote_logic(t_state *state, char **s_ref)
+void	handle_dquote(t_state *state, char **s_ref)
 {
 	++(*s_ref);
 	if (*state == STATE_NORMAL && **s_ref == '\"')
@@ -45,7 +45,7 @@ void	state_determinant(t_state *state, char **s_ref)
 			*state = STATE_DQUOTE;
 	}
 	else if (**s_ref == '\"' && *state != STATE_SQUOTE)
-		handle_dquote_logic(state, s_ref);
+		handle_dquote(state, s_ref);
 }
 
 static t_token	*tokenize_norm_utils(t_token *token_list)
