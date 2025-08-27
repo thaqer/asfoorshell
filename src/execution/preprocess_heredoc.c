@@ -21,8 +21,9 @@ static void	preprocess_heredoc_redirs(t_redir *redirs, t_shell *shell)
 	{
 		if (current->type == REDIR_HEREDOC)
 		{
+			fprintf(stderr, "Executing pipeline...%s\n", current->target);
 			current->heredoc_fd = handle_heredoc_redir(current->target, shell);
-			if (current->heredoc_fd == -2 || g_sig_value == SIGINT)
+			if (current->heredoc_fd == -2)
 				break ;
 		}
 		current = current->next;
@@ -38,8 +39,10 @@ static void	preprocess_subshell_heredocs(t_ast *ast, t_shell *shell)
 	{
 		if (current->type == REDIR_HEREDOC)
 		{
+			fprintf(stderr, "ssssssssExecuting pipeline...%s\n",
+				current->target);
 			current->heredoc_fd = handle_heredoc_redir(current->target, shell);
-			if (current->heredoc_fd == -2 || g_sig_value == SIGINT)
+			if (current->heredoc_fd == -2)
 				break ;
 		}
 		current = current->next;
@@ -81,11 +84,6 @@ void	preprocess_all_heredocs(t_ast *ast, t_shell *shell)
 		|| ast->type == AST_LOGICAL_OR)
 	{
 		preprocess_all_heredocs(ast->s_binary.left, shell);
-		if (g_sig_value == SIGINT)
-		{
-			handle_heredoc_signal(ast, shell);
-			return ;
-		}
 		preprocess_all_heredocs(ast->s_binary.right, shell);
 	}
 	else if (ast->type == AST_SUBSHELL && ast->s_subshell.redirs)

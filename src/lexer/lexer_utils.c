@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: daniah <daniah@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 12:49:56 by amaassaf          #+#    #+#             */
-/*   Updated: 2025/08/25 22:08:06 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/27 11:42:18 by daniah           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,28 +85,9 @@ t_token	*append(t_token **head, char *value, t_token_type type, t_qflags flags)
 	return (new_token);
 }
 
-void	append_and_handle_failure(t_token **token_list, char *start_ref,
-		char *input_ref)
+t_token	*tokenize_norm_utils(t_token *token_list)
 {
-	char		*value;
-	t_qflags	flags;
-	t_token		*prev;
-
-	value = ft_strndup(start_ref, (input_ref - start_ref));
-	flags = compute_qflags_from_raw(value);
-	if (!append(token_list, value, TOKEN_WORD, flags))
-	{
-		free(value);
-		free_tok_list(*token_list);
-		exit(EXIT_FAILURE);
-	}
-	free(value);
-	prev = get_prev_token(*token_list);
-	if (!prev)
-		return ;
-	if (prev->type == TOKEN_HEREDOC)
-	{
-		if (prev->next->qflags & (QF_HAS_SQ | QF_HAS_DQ))
-			prev->next->qflags |= QF_HD_QUOTED;
-	}
+	ft_putstr_fd("minishell: syntax error: unclosed quote \n", 2);
+	free_tok_list(token_list);
+	return (NULL);
 }

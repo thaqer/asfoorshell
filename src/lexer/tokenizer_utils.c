@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer_utils.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: daniah <daniah@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 05:10:00 by daniah            #+#    #+#             */
-/*   Updated: 2025/08/26 21:13:50 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/25 05:11:50 by daniah           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,7 @@ t_separator_type	handle_double_char_sep(char *current_position)
 
 t_separator_type	is_separator(char *current_position)
 {
-	if (*current_position && *(current_position + 1)
-		&& *current_position == *(current_position + 1)
+	if (*current_position && *current_position == *(current_position + 1)
 		&& *current_position != ' ')
 		return (handle_double_char_sep(current_position));
 	if (*current_position == ' ')

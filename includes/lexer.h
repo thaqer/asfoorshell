@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: daniah <daniah@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 03:52:32 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/25 20:37:30 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/27 11:43:15 by daniah           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,5 +100,6 @@ int					insert_at_index(t_token **head, size_t index,
 						t_token *new_node);
 void				delete_node(t_token **head, const char *value);
 void				state_determinant(t_state *state, char **s_ref);
+t_token				*tokenize_norm_utils(t_token *token_list);
 
 #endif
