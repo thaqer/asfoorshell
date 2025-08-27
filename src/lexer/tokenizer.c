@@ -6,7 +6,7 @@
 /*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 19:26:32 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/27 12:11:52 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/27 12:00:51 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,57 +48,11 @@ void	state_determinant(t_state *state, char **s_ref)
 		handle_dquote_logic(state, s_ref);
 }
 
-void	append_and_handle_failure(t_token **token_list, char *start_ref,
-		char *input_ref)
+static t_token	*tokenize_norm_utils(t_token *token_list)
 {
-	char		*value;
-	t_qflags	flags;
-	t_token		*prev;
-
-	value = ft_strndup(start_ref, (input_ref - start_ref));
-	flags = compute_qflags_from_raw(value);
-	if (!append(token_list, value, TOKEN_WORD, flags))
-	{
-		free(value);
-		free_tok_list(*token_list);
-		exit(EXIT_FAILURE);
-	}
-	free(value);
-	prev = get_prev_token(*token_list);
-	if (!prev)
-		return ;
-	if (prev->type == TOKEN_HEREDOC)
-	{
-		if (prev->next->qflags & (QF_HAS_SQ | QF_HAS_DQ))
-			prev->next->qflags |= QF_HD_QUOTED;
-	}
-}
-
-void	normal_state_handler(t_separator_type sep_type, t_token **token_list,
-		char **start_ref, char **input_ref)
-{
-	if (sep_type == SEP_NONE)
-	{
-		if (**input_ref)
-			(*input_ref)++;
-		if (!**input_ref)
-			append_and_handle_failure(token_list, *start_ref, *input_ref);
-	}
-	else
-	{
-		if ((*input_ref - *start_ref) != 0)
-		{
-			append_and_handle_failure(token_list, *start_ref, *input_ref);
-		}
-		if (sep_type != SEP_SPACE)
-		{
-			append_separator(token_list, sep_type, input_ref, start_ref);
-		}
-		else
-		{
-			*start_ref = ++(*input_ref);
-		}
-	}
+	ft_putstr_fd("minishell: syntax error: unclosed quote \n", 2);
+	free_tok_list(token_list);
+	return (NULL);
 }
 
 t_token	*tokenize(char *input)
@@ -121,7 +75,7 @@ t_token	*tokenize(char *input)
 		sep_type = is_separator(input);
 		if (state == STATE_NORMAL)
 			normal_state_handler(sep_type, &token_list, &start, &input);
-		else
+		else if (*input)
 			input++;
 	}
 	if (state != STATE_NORMAL)

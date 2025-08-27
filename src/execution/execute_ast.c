@@ -105,7 +105,6 @@ void	preprocess_left_heredocs(t_ast *ast, t_shell *shell)
 		{
 			if (current->type == REDIR_HEREDOC)
 			{
-				fprintf(stderr, "1 Executing pipeline...%s\n", current->target);
 				current->heredoc_fd = handle_heredoc_redir(current->target,
 						shell);
 			}
