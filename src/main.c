@@ -6,7 +6,7 @@
 /*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 15:29:04 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/27 17:57:41 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/27 18:52:25 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,6 @@ void	exit_shell(t_shell *shell)
 {
 	cleanup(shell);
 	clear_history();
-	rl_free_line_state();
 	printf("\rexit\n");
 	exit(0);
 }

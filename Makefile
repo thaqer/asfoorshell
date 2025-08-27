@@ -1,8 +1,8 @@
-NAME        := minishell
+NAME        = minishell
 
 # Compiler and flags
 CC          = cc
-CFLAGS      = -Wall -Werror -Wextra -g -fPIE
+CFLAGS      = -Wall -Werror -Wextra
 INCLUDES    = -I includes -I libft
 LDFLAGS     = -lreadline -L./libft -lft
 
@@ -86,15 +86,7 @@ SRC = $(addprefix $(SRC_DIR)/, $(SRC_FILES))
 # # SRC must already contain full paths (like srcs/...).
 OBJ := $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
-# or in two rules => Generate corresponding object paths under obj/
-# OBJ_FILES = $(SRC_FILES:%=$(OBJ_DIR)/%.o)
-# OBJ = $(addprefix $(OBJ_DIR)/, $(OBJ_FILES))
-# Assumption = > SRC_FILES contains file paths without the leading srcs/.
-#				 (relative paths)
-# two-step, works on bare file paths and then prepends obj/.
-# First, it transforms only the file names in SRC_FILES from .c to .o.
-# (Here, SRC_FILES usually contains relative paths without srcs/, e.g. lexer/tokenizer.c)
-# Then it prepends obj/ to every .o.
+
 
 # Rules
 all: $(NAME)
@@ -126,8 +118,3 @@ fclean: clean
 re: fclean all
 
 .PHONY: all clean fclean re
-
-# := and = both assign values to variables
-# but they work differently in terms of when the value is expanded.
-# = = delayed expansion (recalculates each time).
-# := = immediate expansion (locks in the value once).0.
