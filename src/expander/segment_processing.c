@@ -6,7 +6,7 @@
 /*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 21:35:00 by dqaddomi          #+#    #+#             */
-/*   Updated: 2025/08/25 22:09:59 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/27 22:31:31 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@ char	*process_single_segment(t_segment *current,
 	else if (current->type == SEGMENT_DOUBLE_QUOTED)
 	{
 		segment_result = dquote_expander(current->value, expander_creds);
+		if (segment_result)
+			*flag = 1;
 	}
 	else if (current->type == SEGMENT_UNQUOTED)
 	{
@@ -78,12 +80,20 @@ int	process_segment_loop(t_segment *segments, t_expander_creds *expander_creds,
 	return (1);
 }
 
-int	finalize_tokens(char *accumulated, t_token **head, int *index)
+int	finalize_tokens(char *accumulated, t_token **head, int *index, int flag)
 {
 	if (accumulated && *accumulated)
 	{
-		if (!append_split_tokens(head, index, accumulated))
-			return (0);
+		if (flag == 0)
+		{
+			if (!append_split_tokens(head, index, accumulated))
+				return (0);
+		}
+		else
+		{
+			if (!create_and_insert_token(head, index, accumulated))
+				return (0);
+		}
 	}
 	return (1);
 }
@@ -100,7 +110,7 @@ int	process_segments_with_splitting(t_segment *segments,
 		return (0);
 	if (!process_segment_loop(segments, expander_creds, &accumulated, &flag))
 		return (0);
-	if (!finalize_tokens(accumulated, head, index))
+	if (!finalize_tokens(accumulated, head, index, flag))
 	{
 		free(accumulated);
 		return (0);

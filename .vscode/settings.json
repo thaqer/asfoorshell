@@ -70,6 +70,13 @@
     "initializer_list": "c",
     "ranges": "c",
     "span": "c",
-    "utility": "c"
+    "utility": "c",
+    "optional": "cpp",
+    "ostream": "cpp",
+    "system_error": "cpp",
+    "functional": "cpp",
+    "tuple": "cpp",
+    "type_traits": "cpp",
+    "random": "cpp"
   }
 }

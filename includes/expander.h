@@ -6,7 +6,7 @@
 /*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 08:16:38 by dqaddomi          #+#    #+#             */
-/*   Updated: 2025/08/27 12:46:21 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/27 22:31:31 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,7 +129,7 @@ int						process_segment_loop(t_segment *segments,
 							t_expander_creds *expander_creds,
 							char **accumulated, int *flag);
 int						finalize_tokens(char *accumulated, t_token **head,
-							int *index);
+							int *index, int flag);
 int						process_segments_with_splitting(t_segment *segments,
 							t_expander_creds *expander_creds, t_token **head,
 							int *index);
