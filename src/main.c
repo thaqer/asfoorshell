@@ -103,7 +103,7 @@ int	main(int argc, char **argv, char **environment)
 		while (1)
 		{
 			setup_signals(SIGNAL_PARENT);
-			line = readline("\033[93masfoorshell🐥\033[0m:~ ");
+			line = readline("masfoorshell:~$ ");
 			if (line == NULL)
 				exit_shell(&shell);
 			if (g_sig_value != 0)

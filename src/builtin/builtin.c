@@ -28,7 +28,7 @@ int	is_builtin_command(char *cmd)
 	i = 0;
 	while (builtins[i].name)
 	{
-		if (ft_strncmp(cmd, builtins[i].name, ft_strlen(builtins[i].name)) == 0)
+		if (ft_strcmp(cmd, builtins[i].name) == 0)
 			return (1);
 		i++;
 	}
