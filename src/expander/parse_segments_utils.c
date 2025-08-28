@@ -31,8 +31,8 @@ int	handle_unquoted_before_sq(t_segment **segments, char **start,
 	return (1);
 }
 
-int	handle_squote_end(t_segment **segments, char **start,
-		char **current, t_state *state)
+int	handle_squote_end(t_segment **segments, char **start, char **current,
+		t_state *state)
 {
 	char	*segment_value;
 
@@ -69,8 +69,8 @@ int	handle_unquoted_before_dq(t_segment **segments, char **start,
 	return (1);
 }
 
-int	handle_dquote_end(t_segment **segments, char **start,
-		char **current, t_state *state)
+int	handle_dquote_end(t_segment **segments, char **start, char **current,
+		t_state *state)
 {
 	char	*segment_value;
 
@@ -88,8 +88,8 @@ int	handle_dquote_end(t_segment **segments, char **start,
 	return (2);
 }
 
-int	handle_remaining_segment(t_segment **segments, char *start,
-		char *current, t_state state)
+int	handle_remaining_segment(t_segment **segments, char *start, char *current,
+		t_state state)
 {
 	t_segment_type	seg_type;
 	char			*segment_value;

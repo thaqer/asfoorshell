@@ -6,7 +6,7 @@
 /*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 21:35:00 by dqaddomi          #+#    #+#             */
-/*   Updated: 2025/08/26 20:24:29 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/27 13:06:49 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,8 +50,8 @@ static int	handle_squote_end(t_segment **segments, char **start,
 	return (2);
 }
 
-int	handle_single_quote(t_segment **segments, char **start,
-		char **current, t_state *state)
+int	handle_single_quote(t_segment **segments, char **start, char **current,
+		t_state *state)
 {
 	if (*state == STATE_NORMAL)
 	{

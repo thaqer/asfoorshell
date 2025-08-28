@@ -17,11 +17,22 @@ int	execute_external_command(char **argv, t_shell *shell)
 	char	*command_path;
 	int		status;
 
+	if (!argv || !argv[0] || !*argv[0])
+		return (0);
+	if (is_directory(argv[0]))
+	{
+		ft_putstr_fd(argv[0], 2);
+		ft_putstr_fd(": is a directory\n", 2);
+		return (126);
+	}
 	command_path = find_command_in_path(argv[0], shell);
 	if (!command_path)
 	{
 		ft_putstr_fd(argv[0], 2);
-		ft_putstr_fd(": command not found\n", 2);
+		if (access(argv[0], F_OK) != 0 && ft_strchr(argv[0], '/'))
+			perror(" ");
+		else
+			ft_putstr_fd(": command not found\n", 2);
 		return (127);
 	}
 	status = fork_and_execute(command_path, argv, shell);

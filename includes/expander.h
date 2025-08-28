@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/22 08:16:38 by amaassaf          #+#    #+#             */
-/*   Updated: 2025/08/26 20:03:46 by dqaddomi         ###   ########.fr       */
+/*   Created: 2025/08/22 08:16:38 by dqaddomi          #+#    #+#             */
+/*   Updated: 2025/08/27 22:31:31 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,8 +113,6 @@ int						handle_quote_end(t_quote_params *params,
 /* quote_processing.c */
 int						handle_quote_character(t_quote_params *params,
 							char quote_char);
-int						process_character(t_segment **segments, char **start,
-							char **current, t_state *state);
 t_segment				*parse_mixed_segments(char *input);
 void					cleanup_split_array(char **split, int start_index);
 int						create_and_insert_token(t_token **head, int *index,
@@ -131,7 +129,7 @@ int						process_segment_loop(t_segment *segments,
 							t_expander_creds *expander_creds,
 							char **accumulated, int *flag);
 int						finalize_tokens(char *accumulated, t_token **head,
-							int *index);
+							int *index, int flag);
 int						process_segments_with_splitting(t_segment *segments,
 							t_expander_creds *expander_creds, t_token **head,
 							int *index);

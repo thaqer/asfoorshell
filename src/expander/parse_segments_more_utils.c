@@ -50,8 +50,8 @@ static int	handle_dquote_end(t_segment **segments, char **start,
 	return (2);
 }
 
-int	handle_double_quote(t_segment **segments, char **start,
-		char **current, t_state *state)
+int	handle_double_quote(t_segment **segments, char **start, char **current,
+		t_state *state)
 {
 	if (*state == STATE_NORMAL)
 	{

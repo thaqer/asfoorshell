@@ -1,302 +1,179 @@
-# Execution Module
+# Execution Module - README
 
 ## Overview
-The execution module traverses the AST created by the parser and executes commands, handling pipes, redirections, logical operators, and process management. It coordinates with the builtin module for internal commands and manages external process execution.
 
-## Core Data Structures
+The execution module is responsible for executing the Abstract Syntax Tree (AST) produced by the parser. It handles different types of commands including simple commands, pipelines, logical operators, and subshells. The module manages process creation, I/O redirection, built-in command execution, and proper signal handling during execution.
 
-### Shell Execution Context (`t_execution`)
+## Core Components
+
+### AST Execution Types
+The execution module handles all AST node types:
+- `AST_SIMPLE_COMMAND` - Execute single command with redirections
+- `AST_PIPELINE` - Execute commands connected by pipes
+- `AST_LOGICAL_AND` - Execute second command only if first succeeds
+- `AST_LOGICAL_OR` - Execute second command only if first fails
+- `AST_SUBSHELL` - Execute commands in a separate shell process
+
+### Execution Context
+The execution state is maintained through:
 ```c
-typedef struct s_execution
-{
+typedef struct s_execution {
     int saved_stdin;     // Backup of original stdin
     int saved_stdout;    // Backup of original stdout
 } t_execution;
 ```
 
-### Signal Modes (`t_signal_mode`)
-```c
-typedef enum e_signal_mode
-{
-    SIGNAL_PARENT,    // Interactive parent shell
-    SIGNAL_CHILD,     // Child processes
-    SIGNAL_HEREDOC,   // During heredoc input
-    SIGNAL_NONE       // No signal handling
-} t_signal_mode;
-```
+### Signal Modes
+Different execution contexts require different signal handling:
+- `SIGNAL_PARENT` - Main shell signal handling
+- `SIGNAL_CHILD` - Child process signal handling  
+- `SIGNAL_HEREDOC` - Special handling during heredoc input
+- `SIGNAL_NONE` - Minimal signal handling during waiting
 
-### Global Signal Variable
-```c
-extern volatile sig_atomic_t g_sig_value;  // Current signal number
-```
+## Key Functions
 
-## Main Execution Functions
+### Main Execution Dispatcher
+- `execute_ast()` - Main entry point that dispatches based on AST type
+- `execute_simple_command()` - Executes basic commands
+- `execute_pipeline()` - Handles pipe execution
+- `execute_logical_and()` - Implements && logic
+- `execute_logical_or()` - Implements || logic  
+- `execute_subshell()` - Executes commands in subshell
 
-### `execute_ast(t_ast *ast, t_shell *shell)`
-**Purpose**: Main dispatcher for AST node execution
-**Process**:
-1. Check for NULL AST node
-2. Switch on AST node type
-3. Call appropriate execution function
-4. Return exit status
+### Command Execution
+- `execute_external_command()` - Handles external program execution
+- `find_command_in_path()` - Locates executables in PATH
+- `fork_and_execute()` - Creates child process and executes command
+- `is_directory()` - Checks if command path is a directory
 
-**Supported Node Types**:
-- `AST_SIMPLE_COMMAND` → `execute_simple_command()`
-- `AST_PIPELINE` → `execute_pipeline()`
-- `AST_LOGICAL_AND` → `execute_logical_and()`
-- `AST_LOGICAL_OR` → `execute_logical_or()`
-- `AST_SUBSHELL` → `execute_subshell()`
+### I/O Management
+- `handle_redirections()` - Sets up file redirections
+- `save_and_redirect()` - Saves original fds and applies redirections
+- `restore_std_fds()` - Restores original stdin/stdout
+- `restore_and_clear_std_fds()` - Restoration with cleanup
 
-### `execute_simple_command(t_ast *ast, t_shell *shell)`
-**Purpose**: Executes basic commands with arguments and redirections
-**Process**:
-1. Handle redirections first
-2. Check if command is builtin
-3. If builtin: execute in current process
-4. If external: fork and execute
-5. Restore redirections
-6. Return exit status
-
-**Key Features**:
-- Builtin detection and execution
-- Redirection setup and cleanup
-- External command path resolution
-- Error handling and status codes
-
-### `execute_pipeline(t_ast *ast, t_shell *shell)`
-**Purpose**: Executes commands connected by pipes
-**Process**:
-1. Create pipe with `pipe()` system call
-2. Fork for left command:
-   - Redirect stdout to pipe write end
-   - Close pipe read end
-   - Execute left command
-3. Fork for right command:
-   - Redirect stdin from pipe read end
-   - Close pipe write end
-   - Execute right command
-4. Close both pipe ends in parent
-5. Wait for both children
-6. Return exit status of rightmost command
-
-**Pipeline Flow**:
-```
-cmd1 | cmd2 | cmd3
-└─stdout─┐  ┌─stdin──┐
-         pipe      pipe
-         └─stdin───┘  └─stdout─→
-```
-
-### `execute_logical_and(t_ast *ast, t_shell *shell)`
-**Purpose**: Executes `&&` logical AND operations
-**Logic**:
-1. Execute left command
-2. If left succeeds (exit status 0):
-   - Execute right command
-   - Return right command's status
-3. If left fails:
-   - Skip right command
-   - Return left command's status
-
-### `execute_logical_or(t_ast *ast, t_shell *shell)`
-**Purpose**: Executes `||` logical OR operations
-**Logic**:
-1. Execute left command
-2. If left fails (non-zero exit status):
-   - Execute right command
-   - Return right command's status
-3. If left succeeds:
-   - Skip right command
-   - Return left command's status
-
-### `execute_subshell(t_ast *ast, t_shell *shell)`
-**Purpose**: Executes commands in parentheses `(...)`
-**Process**:
-1. Handle subshell redirections
-2. Fork new process for subshell
-3. In child: execute inner command
-4. In parent: wait for child completion
-5. Restore redirections
-6. Return child exit status
-
-## Helper Functions
-
-### External Command Execution
-
-#### `execute_external_command(char **argv, t_shell *shell)`
-**Purpose**: Executes external programs
-**Process**:
-1. Find command in PATH
-2. Fork child process
-3. In child: `execve()` the command
-4. In parent: wait for completion
-5. Return child exit status
-
-#### `find_command_in_path(char *cmd, t_shell *shell)`
-**Purpose**: Locates executable in PATH directories
-**Process**:
-1. If command contains '/', use as absolute path
-2. Get PATH environment variable
-3. Split PATH into directories
-4. Search each directory for executable
-5. Return full path or NULL
-
-#### `search_in_path_dirs(char **paths, char *cmd)`
-**Purpose**: Helper to search PATH directories
-**Process**:
-1. Iterate through path directories
-2. Construct full path: `directory/command`
-3. Check if file exists and is executable
-4. Return first match found
-
-#### `fork_and_execute(char *command_path, char **argv, t_shell *shell)`
-**Purpose**: Forks and executes external command
-**Process**:
-1. Fork child process
-2. In child:
-   - Set up signal handling
-   - Convert environment to char**
-   - `execve(command_path, argv, envp)`
-3. In parent:
-   - Set up signal handling
-   - Wait for child completion
-   - Handle interrupted system calls
-
-### Redirection Management
-
-#### `handle_redirections(t_redir *redirs, t_shell *shell)`
-**Purpose**: Sets up all redirections for a command
-**Process**:
-1. Save current stdin/stdout
-2. Process each redirection in list
-3. Handle different redirection types
-4. Return success/failure status
-
-#### `save_and_redirect(t_redir *redirs, t_shell *shell, int *saved_stdin, int *saved_stdout)`
-**Purpose**: Apply redirections and save original file descriptors
-**Redirection Types**:
-- `REDIR_IN` (`<`): Redirect stdin from file
-- `REDIR_OUT` (`>`): Redirect stdout to file (truncate)
-- `REDIR_APPEND` (`>>`): Redirect stdout to file (append)
-- `REDIR_HEREDOC` (`<<`): Redirect stdin from heredoc
-
-#### `restore_std_fds(int saved_stdin, int saved_stdout)`
-**Purpose**: Restore original stdin/stdout after command execution
-**Process**:
-1. `dup2()` saved descriptors back to 0/1
-2. Close saved descriptors
-3. Reset shell execution state
-
-#### `restore_and_clear_std_fds(t_shell *shell, int saved_stdin, int saved_stdout)`
-**Purpose**: Restore and clear shell's saved descriptors
-**Process**: Restore descriptors and reset shell state
-
-### Pipeline Helpers
-
-#### `handle_left_pipeline(int *pipefd, t_ast *ast, t_shell *shell)`
-**Purpose**: Execute left side of pipeline
-**Process**:
-1. Fork child process
-2. In child:
-   - Close pipe read end
-   - Redirect stdout to pipe write end
-   - Execute AST node
-3. Return child PID
-
-#### `handle_right_pipeline(int *pipefd, t_ast *ast, t_shell *shell)`
-**Purpose**: Execute right side of pipeline
-**Process**:
-1. Fork child process
-2. In child:
-   - Close pipe write end
-   - Redirect stdin from pipe read end
-   - Execute AST node
-3. Return child PID
-
-### Heredoc Processing
-
-#### `preprocess_all_heredocs(t_ast *ast, t_shell *shell)`
-**Purpose**: Process all heredocs before execution
-**Process**:
-1. Recursively traverse AST
-2. Find all heredoc redirections
-3. Read heredoc content from user
-4. Store in temporary files or memory
-5. Update redirection targets
-
-#### `preprocess_left_heredocs(t_ast *ast, t_shell *shell)`
-**Purpose**: Process heredocs for left side of binary operations
-**Usage**: Ensures heredocs are processed before forking
-
-#### `cleanup_heredoc_fds(t_ast *ast)`
-**Purpose**: Clean up heredoc file descriptors
-**Process**: Close and remove temporary heredoc files
-
-## Signal Handling
-
-### `setup_signals(int mode)`
-**Purpose**: Configure signal handlers based on context
-**Modes**:
-- `SIGNAL_PARENT`: Handle Ctrl-C, Ctrl-\\ in interactive mode
-- `SIGNAL_CHILD`: Default signal handling for child processes
-- `SIGNAL_HEREDOC`: Special handling during heredoc input
-- `SIGNAL_NONE`: Ignore signals
-
-### `handle_signal(int sig)`
-**Purpose**: Signal handler function
-**Process**:
-1. Set global signal variable
-2. Handle SIGINT (Ctrl-C) appropriately
-3. Handle SIGQUIT (Ctrl-\\) appropriately
-4. Update shell state if needed
-
-## Process Management
-
-### Fork and Wait Patterns
-1. **Simple Commands**: Fork, exec, wait
-2. **Pipelines**: Multiple forks, pipe setup, coordinate waits
-3. **Subshells**: Fork for isolation, wait for completion
-4. **Background**: Fork without waiting (bonus feature)
-
-### Exit Status Handling
-- **Success**: Exit status 0
-- **Command not found**: Exit status 127
-- **Permission denied**: Exit status 126
-- **Signal termination**: Exit status 128 + signal number
-- **Builtin errors**: Various status codes
-
-### Error Handling
-- **System call failures**: Handle EINTR, EAGAIN
-- **Memory allocation**: Check malloc failures
-- **File descriptor limits**: Handle EMFILE, ENFILE
-- **Path resolution**: Handle command not found
+### Pipeline Handling
+- `handle_left_pipeline()` - Manages left side of pipe
+- `handle_right_pipeline()` - Manages right side of pipe
+- `preprocess_all_heredocs()` - Processes heredocs before execution
+- `cleanup_heredoc_fds()` - Cleans up heredoc file descriptors
 
 ## Execution Flow
 
-### Simple Command Flow
-1. **Setup**: Save stdin/stdout, setup redirections
-2. **Decision**: Check if builtin or external
-3. **Builtin Path**: Execute in current process
-4. **External Path**: Fork, find in PATH, exec
-5. **Cleanup**: Restore redirections, get exit status
+### Simple Command Execution
+1. **Save Standard FDs**: Backup stdin/stdout for restoration
+2. **Apply Redirections**: Set up input/output redirections
+3. **Check Built-in**: Determine if command is built-in
+4. **Execute**: Call appropriate execution function
+5. **Restore FDs**: Restore original stdin/stdout
 
-### Pipeline Flow
-1. **Preprocessing**: Handle heredocs for all commands
-2. **Pipe Creation**: Create pipe file descriptors
-3. **Left Fork**: Execute left command with stdout → pipe
-4. **Right Fork**: Execute right command with stdin ← pipe
-5. **Parent**: Close pipe, wait for both children
-6. **Status**: Return rightmost command's exit status
+### Pipeline Execution  
+1. **Create Pipe**: Set up pipe between commands
+2. **Fork Left Process**: Execute left command with stdout to pipe
+3. **Fork Right Process**: Execute right command with stdin from pipe
+4. **Close Pipe FDs**: Close pipe descriptors in parent
+5. **Wait for Children**: Wait for both processes to complete
+6. **Return Status**: Return exit status of rightmost command
 
-### Logical Operation Flow
-1. **Left Execution**: Execute left command, get status
-2. **Decision**: Based on operator and left status
-3. **Right Execution**: Execute right command if needed
-4. **Status**: Return appropriate exit status
+### Logical Operator Execution
+1. **Execute Left**: Run first command
+2. **Check Status**: Evaluate exit status
+3. **Conditional Execute**: Run second command based on operator and status
+   - `&&`: Execute right only if left succeeded (status 0)
+   - `||`: Execute right only if left failed (status ≠ 0)
 
-## Integration Points
-- **Input**: AST from parser
-- **Builtins**: Coordinate with builtin module
-- **Environment**: Access shell environment variables
-- **Redirections**: Coordinate with redirection module
-- **Signals**: Handle user interrupts appropriately
+### Subshell Execution
+1. **Fork Process**: Create child process for subshell
+2. **Set Child Signals**: Configure signal handling for child
+3. **Apply Redirections**: Handle subshell redirections
+4. **Execute Child**: Execute AST in child process
+5. **Wait for Child**: Parent waits for subshell completion
+
+## Redirection Handling
+
+### Redirection Types
+- `REDIR_IN` - Input redirection `<`
+- `REDIR_OUT` - Output redirection `>`
+- `REDIR_APPEND` - Append redirection `>>`
+- `REDIR_HEREDOC` - Here document `<<`
+
+### Heredoc Processing
+1. **Preprocessing**: Process all heredocs before command execution
+2. **Temporary Files**: Create temporary files for heredoc content
+3. **Signal Handling**: Special SIGINT handling during heredoc input
+4. **Expansion**: Apply variable expansion to heredoc content (unless quoted)
+5. **Cleanup**: Remove temporary files after execution
+
+### File Descriptor Management
+- Proper saving and restoration of stdin/stdout
+- Cleanup of unused file descriptors
+- Handling of file descriptor limits
+- Error handling for file operations
+
+## Error Handling and Edge Cases
+
+### Command Not Found
+1. **PATH Search**: Search through PATH directories
+2. **Executable Check**: Verify file is executable
+3. **Directory Check**: Handle case where command is a directory
+4. **Error Reporting**: Proper error messages for different failure types
+
+### Permission and Access Errors
+1. **File Access**: Handle permission denied errors
+2. **Directory Traversal**: Check directory access permissions
+3. **Redirection Errors**: Handle file creation/access failures
+4. **Pipe Errors**: Handle pipe creation failures
+
+### Signal Handling During Execution
+1. **SIGINT Handling**: Interrupt handling in different contexts
+2. **SIGPIPE Handling**: Broken pipe handling in pipelines
+3. **Child Signal Setup**: Proper signal configuration for child processes
+4. **Signal Restoration**: Restore signal handlers after execution
+
+### Memory and Resource Management
+1. **Process Cleanup**: Proper child process cleanup
+2. **File Descriptor Leaks**: Prevention of fd leaks
+3. **Memory Allocation**: Error handling for memory failures
+4. **Resource Limits**: Handling of system resource limits
+
+## File Structure
+
+- `execute_ast.c` - Main AST execution dispatcher
+- `execute_ast_utils.c` - AST execution utilities
+- `execution.c` - Core execution logic
+- `execution_utils.c` - Execution utility functions
+- `logical_operators.c` - Logical operator (&&, ||) handling
+- `preprocess_heredoc.c` - Heredoc preprocessing logic
+
+## Integration with Other Modules
+
+### Built-in Commands
+- Integrates with builtin module for built-in command execution
+- Handles built-in vs external command distinction
+- Proper exit status handling for built-ins
+
+### Environment Variables
+- Uses environment module for variable access
+- Passes environment to external commands
+- Handles environment modifications
+
+### Signal System
+- Coordinates with signal module for proper signal handling
+- Different signal contexts for different execution phases
+- Proper signal restoration after execution
+
+## Usage Example
+
+For command: `echo hello | grep h && ls -la > output.txt`
+
+Execution Flow:
+1. **Pipeline**: Execute `echo hello | grep h`
+   - Fork for `echo hello` with stdout to pipe
+   - Fork for `grep h` with stdin from pipe
+   - Wait for both, get exit status
+2. **Logical AND**: If pipeline succeeded, execute `ls -la > output.txt`
+   - Set up output redirection to `output.txt`
+   - Execute `ls -la`
+   - Restore redirections
+
+The module ensures proper process management, signal handling, and resource cleanup throughout the execution process.

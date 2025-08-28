@@ -6,27 +6,14 @@
 /*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 19:26:32 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/26 20:03:46 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/27 17:40:45 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "lexer.h"
 #include "minishell.h"
 
-static void	handle_single_quote_utils(t_state *state, char **s_ref)
-{
-	++(*s_ref);
-	if (*state == STATE_NORMAL && **s_ref == '\'')
-		++(*s_ref);
-	else if (*state == STATE_SQUOTE && **s_ref != '\'')
-		*state = STATE_NORMAL;
-	else
-		*state = STATE_SQUOTE;
-	if (*state == STATE_NORMAL && **s_ref == '\"')
-		*state = STATE_DQUOTE;
-}
-
-static void	handle_double_quote_utils(t_state *state, char **s_ref)
+void	handle_dquote(t_state *state, char **s_ref)
 {
 	++(*s_ref);
 	if (*state == STATE_NORMAL && **s_ref == '\"')
@@ -46,9 +33,19 @@ static void	handle_double_quote_utils(t_state *state, char **s_ref)
 void	state_determinant(t_state *state, char **s_ref)
 {
 	if (**s_ref == '\'' && *state != STATE_DQUOTE)
-		handle_single_quote_utils(state, s_ref);
+	{
+		++(*s_ref);
+		if (*state == STATE_NORMAL && **s_ref == '\'')
+			++(*s_ref);
+		else if (*state == STATE_SQUOTE && **s_ref != '\'')
+			*state = STATE_NORMAL;
+		else
+			*state = STATE_SQUOTE;
+		if (*state == STATE_NORMAL && **s_ref == '\"')
+			*state = STATE_DQUOTE;
+	}
 	else if (**s_ref == '\"' && *state != STATE_SQUOTE)
-		handle_double_quote_utils(state, s_ref);
+		handle_dquote(state, s_ref);
 }
 
 static t_token	*tokenize_norm_utils(t_token *token_list)
@@ -78,7 +75,7 @@ t_token	*tokenize(char *input)
 		sep_type = is_separator(input);
 		if (state == STATE_NORMAL)
 			normal_state_handler(sep_type, &token_list, &start, &input);
-		else
+		else if (*input)
 			input++;
 	}
 	if (state != STATE_NORMAL)

@@ -6,7 +6,7 @@
 /*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 09:00:09 by dqaddomi          #+#    #+#             */
-/*   Updated: 2025/08/26 10:59:22 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/27 22:55:17 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,27 +108,28 @@ static int	process_token_expansion(t_token *cur, t_token **head, size_t index,
 int	expand_tokens(t_token **head, t_expander_creds *expander_creds)
 {
 	t_token	*cur;
-	size_t	index;
+	t_token	*next;
+	size_t	indx;
 	int		result;
 
 	cur = *head;
-	index = 0;
+	indx = 0;
 	while (cur)
 	{
+		next = cur->next;
 		if (cur->type == TOKEN_WORD)
 		{
-			result = process_token_expansion(cur, head, index, expander_creds);
+			result = process_token_expansion(cur, head, indx++, expander_creds);
 			if (result == 0)
 				return (0);
 			if (result == 2)
 			{
 				cur = *head;
-				index = 0;
+				indx = 0;
 				continue ;
 			}
 		}
-		cur = cur->next;
-		index++;
+		cur = next;
 	}
 	return (1);
 }

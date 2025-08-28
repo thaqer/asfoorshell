@@ -6,7 +6,7 @@
 /*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 15:29:04 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/26 17:28:25 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/28 16:38:25 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,8 @@ int	initialize_shell(t_shell *shell, t_expander_creds *expander_creds,
 	return (0);
 }
 
-static void	cleanup_line(t_shell *shell,
-		t_expander_creds *expander_creds, char *line)
+static void	cleanup_line(t_shell *shell, t_expander_creds *expander_creds,
+		char *line)
 {
 	if (g_sig_value == SIGINT)
 	{
@@ -81,7 +81,6 @@ void	exit_shell(t_shell *shell)
 {
 	cleanup(shell);
 	clear_history();
-	rl_free_line_state();
 	printf("\rexit\n");
 	exit(0);
 }
@@ -104,7 +103,7 @@ int	main(int argc, char **argv, char **environment)
 		while (1)
 		{
 			setup_signals(SIGNAL_PARENT);
-			line = readline("\033[93masfoorshell🐥\033[0m:~ ");
+			line = readline("\001\033[93m\002asfoorshell🐥\001\033[0m\002:~ ");
 			if (line == NULL)
 				exit_shell(&shell);
 			if (g_sig_value != 0)

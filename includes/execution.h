@@ -58,6 +58,7 @@ char							*search_in_path_dirs(char **paths, char *cmd);
 int								fork_and_execute(char *command_path,
 									char **argv,
 									t_shell *shell);
+int								is_directory(const char *path);
 int								save_and_redirect(t_redir *redirs,
 									t_shell *shell,
 									int *saved_stdin,
