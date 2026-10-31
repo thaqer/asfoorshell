@@ -1,0 +1,6 @@
+obj/
+minishell
+*.o
+out
+out.txt
+t
