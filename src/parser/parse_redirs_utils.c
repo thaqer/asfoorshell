@@ -19,10 +19,8 @@ int	is_redirection_tok(t_token *token)
 	if (!token)
 		return (0);
 	type = token->type;
-	return (type == TOKEN_REDIRECT_IN
-		|| type == TOKEN_REDIRECT_OUT
-		|| type == TOKEN_APPEND
-		|| type == TOKEN_HEREDOC);
+	return (type == TOKEN_REDIRECT_IN || type == TOKEN_REDIRECT_OUT
+		|| type == TOKEN_APPEND || type == TOKEN_HEREDOC);
 }
 
 t_redir_type	token_to_redir_type(t_token_type type)
@@ -75,13 +73,13 @@ int	parse_redirections(t_parser *parser, t_redir **redirs)
 	if (!target)
 	{
 		set_parse_error(parser,
-				"minishell: syntax error: expected filename after redirection");
+			"minishell: syntax error: expected filename after redirection");
 		return (-1);
 	}
 	if (add_redirection(redirs, type, target->value) < 0)
 	{
 		set_parse_error(parser,
-				"minishell: memory allocation failed in redirection");
+			"minishell: memory allocation failed in redirection");
 		return (-1);
 	}
 	(*redirs)->s_delim_quoted = false;

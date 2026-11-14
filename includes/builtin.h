@@ -6,7 +6,7 @@
 /*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 19:53:25 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/24 18:54:38 by dqaddomi         ###   ########.fr       */
+/*   Updated: 2025/08/26 20:39:56 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,4 @@ void					free_env(t_env *env);
 
 // Error handling
 int						shell_error_message(char *message);
-
-
 #endif

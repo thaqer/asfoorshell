@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/22 08:26:40 by amaassaf          #+#    #+#             */
-/*   Updated: 2025/08/24 20:55:52 by dqaddomi         ###   ########.fr       */
+/*   Created: 2025/08/22 08:26:40 by dqaddomi          #+#    #+#             */
+/*   Updated: 2025/08/27 12:07:45 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,5 +100,11 @@ t_ast						*parse_group(t_parser *parser);
 t_ast						*parse_pipeline(t_parser *p);
 t_ast						*parse_logical_line(t_parser *p);
 t_ast						*parse_input_line(t_parser *parser);
+
+/* parser_helpers.c */
+int							handle_parse_logical_error(t_parser *parser,
+								t_ast *left);
+int							handle_parse_pipeline_error(t_parser *parser,
+								t_ast *left);
 
 #endif

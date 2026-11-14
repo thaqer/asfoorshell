@@ -35,7 +35,18 @@ make
 
 ## How it works
 
+```mermaid
+flowchart LR
+    I["⌨️ input line<br/>(readline)"] --> L["Lexer<br/>tokens"]
+    L --> P["Parser<br/>AST"]
+    P --> E["Expander<br/>$VAR, $?, quotes"]
+    E --> X["Executor<br/>fork, pipes, builtins"]
+    X --> R["Redirections<br/>&lt; &gt; &gt;&gt; &lt;&lt;"]
+    X --> S["exit status → $?"]
+```
+
 Each stage is its own module under `src/`, and most have a README with the data structures and examples.
+For the full design (signal modes, main loop, cleanup, Makefile) see **[ARCHITECTURE.md](ARCHITECTURE.md)**.
 
 | Module | Role |
 | --- | --- |
@@ -58,7 +69,7 @@ PIPE
 
 ## Testing
 
-`minishell_tester.sh` runs a set of commands through the shell. To check for leaks and file descriptor problems:
+[COMPREHENSIVE_TEST_CASE.md](COMPREHENSIVE_TEST_CASE.md) traces one complex command through every stage of the shell. To check for leaks and file descriptor problems:
 
 ```sh
 valgrind --leak-check=full --show-leak-kinds=all --track-fds=yes --suppressions=readline_curses.supp ./minishell
@@ -68,4 +79,4 @@ valgrind --leak-check=full --show-leak-kinds=all --track-fds=yes --suppressions=
 
 ## Authors
 
-Built by [thaqer](https://github.com/thaqer) and [daniah](https://github.com/daniah).
+Built by [thaqer](https://github.com/thaqer) and [daniahqaddomi](https://github.com/daniahqaddomi).

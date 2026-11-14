@@ -1,8 +1,8 @@
-NAME        := minishell
+NAME        = minishell
 
 # Compiler and flags
 CC          = cc
-CFLAGS      = -Wall -Werror -Wextra -g -fPIE
+CFLAGS      = -Wall -Werror -Wextra
 INCLUDES    = -I includes -I libft
 LDFLAGS     = -lreadline -L./libft -lft
 
@@ -24,7 +24,10 @@ HEADERS     = includes/minishell.h includes/lexer.h includes/parser.h
 SRC_FILES = \
     main.c \
     lexer/tokenizer.c \
+    lexer/tokenizer_utils.c \
     lexer/lexer_utils.c \
+    lexer/token_operations.c \
+    lexer/lexer_final_utils.c \
     parser/ast_node_constructors.c \
     parser/memory_cleanup.c \
     parser/parse_command_dispatcher.c \
@@ -32,6 +35,7 @@ SRC_FILES = \
     parser/parse_simple_cmd.c \
     parser/parser_core_helpers.c \
     parser/parser.c \
+    parser/parser_helpers.c \
     enviroment/enviroment.c \
     enviroment/enviroment_utils.c \
     enviroment/enviroment_utils_extra.c \
@@ -40,11 +44,22 @@ SRC_FILES = \
     execution/execution_utils.c \
     execution/execute_ast_utils.c \
     execution/logical_operators.c \
+    execution/preprocess_heredoc.c \
     expander/core_expand.c \
+    expander/core_expand_utils.c \
+    expander/core_expand_helpers.c \
     expander/dispatcher_expander.c \
     expander/expand.c \
     expander/expander_utils.c \
     expander/mixed_expand.c \
+    expander/segment_utils.c \
+    expander/quote_start_end.c \
+    expander/quote_processing.c \
+    expander/parse_segments.c \
+    expander/parse_segments_utils.c \
+    expander/parse_segments_more_utils.c \
+    expander/token_utils.c \
+    expander/segment_processing.c \
     expander/type_utils.c \
     redirections/redirections.c \
     redirections/redirections_utils.c \
@@ -61,6 +76,7 @@ SRC_FILES = \
     signals.c \
     signals_utils.c \
     cleanup.c \
+    shell_utils.c \
 
 
 
@@ -70,15 +86,7 @@ SRC = $(addprefix $(SRC_DIR)/, $(SRC_FILES))
 # # SRC must already contain full paths (like srcs/...).
 OBJ := $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
-# or in two rules => Generate corresponding object paths under obj/
-# OBJ_FILES = $(SRC_FILES:%=$(OBJ_DIR)/%.o)
-# OBJ = $(addprefix $(OBJ_DIR)/, $(OBJ_FILES))
-# Assumption = > SRC_FILES contains file paths without the leading srcs/.
-#				 (relative paths)
-# two-step, works on bare file paths and then prepends obj/.
-# First, it transforms only the file names in SRC_FILES from .c to .o.
-# (Here, SRC_FILES usually contains relative paths without srcs/, e.g. lexer/tokenizer.c)
-# Then it prepends obj/ to every .o.
+
 
 # Rules
 all: $(NAME)
@@ -110,8 +118,3 @@ fclean: clean
 re: fclean all
 
 .PHONY: all clean fclean re
-
-# := and = both assign values to variables
-# but they work differently in terms of when the value is expanded.
-# = = delayed expansion (recalculates each time).
-# := = immediate expansion (locks in the value once).0.

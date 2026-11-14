@@ -3,24 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   parse_simple_cmd.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tbaniatt <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 09:47:44 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/22 09:47:59 by tbaniatt         ###   ########.fr       */
+/*   Updated: 2025/08/26 14:43:36 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char	**allocate_argv(t_parser parser)
+static size_t	count_argv_size(t_parser parser)
 {
 	size_t	size;
-	char	**args;
-	t_token	*token;
 
 	size = 0;
-	args = NULL;
-	token = parser.current_token;
 	while (parser.current_token)
 	{
 		if (parser.current_token->type == TOKEN_WORD)
@@ -37,6 +33,18 @@ char	**allocate_argv(t_parser parser)
 		else
 			break ;
 	}
+	return (size);
+}
+
+char	**allocate_argv(t_parser parser)
+{
+	size_t	size;
+	char	**args;
+	t_token	*token;
+
+	args = NULL;
+	token = parser.current_token;
+	size = count_argv_size(parser);
 	if (!size)
 	{
 		if (is_redirection_tok(token))

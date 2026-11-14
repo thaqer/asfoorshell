@@ -1,248 +1,178 @@
-# Expander Module
+# Expander Module - README
 
 ## Overview
-The expander module processes tokens after lexing but before parsing, handling variable expansion, quote removal, parameter substitution, and glob expansion. It transforms tokens with shell-specific expansions into their final values that will be used during execution.
 
-## Core Data Structures
+The expander module handles variable expansion, quote removal, and word splitting for shell tokens. It processes tokens after lexing but before parsing, transforming raw token values into their expanded forms while respecting shell quoting rules. The module handles complex cases like mixed quoting, parameter expansion, and field splitting.
 
-### Expander Credentials (`t_expander_creds`)
+## Core Components
+
+### Expansion Types
+The expander handles several types of expansion:
+- **Parameter Expansion**: `$VAR`, `${VAR}`
+- **Special Parameters**: `$?` (exit status), `$0` (program name)
+- **Quote Removal**: Removes outer quotes after expansion
+- **Field Splitting**: Splits expanded values into multiple tokens
+- **Pathname Expansion**: (Not implemented - would be glob patterns)
+
+### Quote Context Types
+Different quote contexts affect expansion behavior:
+- `SEGMENT_UNQUOTED` - Normal expansion and splitting
+- `SEGMENT_SINGLE_QUOTED` - No expansion, preserve literally
+- `SEGMENT_DOUBLE_QUOTED` - Parameter expansion but no splitting
+
+### Expansion Control Flags
+Quote flags from lexer control expansion behavior:
+- `QF_ALL_SQ` - All single quoted: no expansion
+- `QF_ALL_DQ` - All double quoted: expand but no split
+- `QF_MIXED` - Mixed quoting: complex processing required
+- `QF_EXPANDED` - Already processed flag
+
+### Core Data Structures
+
+#### Expander Credentials
 ```c
-typedef struct s_expander_creds
-{
-    int     last_exit_status;   // $? value
-    t_env   *envp;              // Environment variables
-    char    *program_name;      // $0 value
+typedef struct s_expander_creds {
+    int last_exit_status;    // For $? expansion
+    t_env *envp;            // Environment variables
+    char *program_name;      // For $0 expansion
 } t_expander_creds;
 ```
 
-### Parameter Types (`t_params`)
+#### Segment Structure
+Used for mixed quote processing:
 ```c
-typedef enum e_params
-{
-    UNDERSCORE,    // $_
-    ALPHA,         // $VAR_NAME
-    NUMERIC,       // $0, $1, etc.
-    Q_MARK,        // $?
-    OTHER,         // Other characters
-} t_params;
-```
-
-### Segment Structure (`t_segment`)
-```c
-typedef struct s_segment
-{
-    char                *value;  // Segment content
-    t_segment_type      type;    // Quote type
-    struct s_segment    *next;   // Next segment
+typedef struct s_segment {
+    char *value;            // Segment content
+    t_segment_type type;    // Quote context
+    struct s_segment *next; // Linked list
 } t_segment;
 ```
 
-### Segment Types (`t_segment_type`)
-- `SEGMENT_UNQUOTED` - No quotes, full expansion
-- `SEGMENT_SINGLE_QUOTED` - Single quotes, no expansion
-- `SEGMENT_DOUBLE_QUOTED` - Double quotes, variable expansion only
+## Key Functions
 
-## Main Functions
+### Main Entry Points
+- `expand_tokens()` - Main function that expands entire token list
+- `dquote_expander()` - Handles double-quoted expansions
+- `unquoted_variable_handler()` - Processes unquoted parameter expansion
 
-### `expand_tokens(t_token **head, t_expander_creds *expander_creds)`
-**Purpose**: Main entry point for token expansion
-**Process**:
-1. Iterate through token list
-2. Skip non-WORD tokens and heredoc delimiters
-3. Apply appropriate expansion based on quote flags
-4. Update token values with expanded content
-**Returns**: 0 on success, non-zero on error
+### Core Expansion Logic
+- `expansion_loop()` - Main expansion processing loop
+- `process_dollar_expansion()` - Handles $VAR expansion
+- `handle_dollar_type()` - Dispatches different $ parameter types
+- `get_env_var_value()` - Retrieves environment variable values
+- `expand_env_variable()` - Expands single environment variable
 
-### Expansion Type Dispatchers
+### Mixed Quote Processing  
+- `parse_mixed_segments()` - Parses mixed quoted/unquoted segments
+- `process_segments_with_splitting()` - Handles segment processing with field splitting
+- `process_single_segment()` - Processes individual segments
+- `splice_mixed_expansion()` - Inserts expanded tokens into token list
 
-#### `expand_unquoted_token(t_token *token, t_expander_creds *creds)`
-**Purpose**: Full expansion for unquoted tokens
-**Expansions Applied**:
-- Variable expansion (`$VAR`)
-- Parameter expansion (`$?`, `$0`)
-- Quote removal
-- Glob expansion (if enabled)
+### Utility Functions
+- `strip_quotes()` - Removes outer quotes from strings
+- `param_determinant()` - Identifies parameter types ($, alpha, numeric)
+- `word_all_single()`, `word_all_double()` - Quote type checking
+- `allow_param_expansion()` - Determines if expansion should occur
 
-#### `expand_quoted_token(t_token *token, t_expander_creds *creds)`
-**Purpose**: Limited expansion for quoted tokens
-**Single Quotes**: No expansion, only quote removal
-**Double Quotes**: Variable expansion only, then quote removal
+## Expansion Process
 
-#### `expand_mixed_token(t_token *token, t_expander_creds *creds)`
-**Purpose**: Complex expansion for mixed quote patterns
-**Process**:
-1. Parse into segments by quote boundaries
-2. Apply appropriate expansion per segment
-3. Concatenate results
-4. Handle quote removal
+### Simple Cases
+1. **All Single Quoted**: No expansion, just quote removal
+2. **All Double Quoted**: Parameter expansion only, no field splitting
+3. **Unquoted**: Full expansion and field splitting
 
-## Core Expansion Functions
+### Complex Mixed Expansion
+For tokens with mixed quoting like `"hello"$USER'world'`:
 
-### Variable Expansion
+1. **Segment Parsing**: Break into segments by quote boundaries
+2. **Individual Processing**: Process each segment according to its quote type
+3. **Result Accumulation**: Combine processed segments  
+4. **Field Splitting**: Split result if needed
+5. **Token Replacement**: Replace original with expanded tokens
 
-#### `expand_env_variable(char *output, char *var_start, t_env *envp, char **end_pos)`
-**Purpose**: Expands environment variables (`$VAR`, `${VAR}`)
-**Process**:
-1. Extract variable name
-2. Look up in environment
-3. Append value to output string
-4. Update position pointer
+### Parameter Expansion Details
 
-#### `get_env_var_value(char *var_start, t_env *envp, char **end_pos)`
-**Purpose**: Retrieves environment variable value
-**Process**:
-1. Extract variable name (alphanumeric + underscore)
-2. Handle braced variables `${VAR}`
-3. Search environment list
-4. Return value or empty string
+#### Variable Types
+- **Regular Variables**: `$VAR` → environment variable value
+- **Exit Status**: `$?` → last command exit status  
+- **Program Name**: `$0` → shell program name
+- **Numeric Parameters**: `$1`, `$2`, etc. → Not implemented
 
-#### `extract_variable_name(char *start, char **end_pos)`
-**Purpose**: Extracts variable name from expansion
-**Rules**:
-- Start with letter or underscore
-- Continue with alphanumeric or underscore
-- Handle braced format `${...}`
+#### Expansion Rules
+- Inside single quotes: No expansion
+- Inside double quotes: Expand but preserve as single field
+- Unquoted: Expand and split on whitespace
 
-### Parameter Expansion
+## Edge Cases and Special Handling
 
-#### `expand_exit_status(char *output, int status)`
-**Purpose**: Expands `$?` to last exit status
-**Process**: Convert integer to string and append
+### Empty Expansions
+1. **Undefined Variables**: `$NONEXISTENT` → empty string
+2. **Empty Values**: `$EMPTY` where EMPTY="" → empty string
+3. **Quote Preservation**: `"$EMPTY"` → empty token preserved
 
-#### `expand_numeric_value(char *output, char **pos, char *program_name)`
-**Purpose**: Expands `$0`, `$1`, etc.
-**Implementation**:
-- `$0` → program name
-- `$1`, `$2`, etc. → empty (positional params not implemented)
+### Quote Interaction
+1. **Nested Quotes**: `"don't expand $USER"` → literal dollar
+2. **Adjacent Segments**: `$USER"@host"` → expanded user + literal @host
+3. **Escaped Characters**: Basic escape handling in double quotes
 
-#### `handle_dollar_type(char *output, t_params type, char **pos, t_expander_creds *expander_creds)`
-**Purpose**: Dispatcher for different `$` expansions
-**Process**:
-1. Determine parameter type
-2. Call appropriate expansion function
-3. Update output and position
+### Field Splitting
+1. **IFS Handling**: Uses space/tab/newline for splitting (simplified)
+2. **Empty Fields**: Consecutive delimiters create empty fields
+3. **Leading/Trailing**: Whitespace trimming behavior
 
-### Quote Processing
+### Memory Management
+1. **Incremental Building**: Builds result string incrementally
+2. **Segment Cleanup**: Frees temporary segment structures  
+3. **Token List Updates**: Properly maintains token list integrity
+4. **Error Recovery**: Cleans up on allocation failures
 
-#### `strip_quotes(char *str)`
-**Purpose**: Removes surrounding quotes from string
-**Process**:
-1. Identify quote type (single/double)
-2. Check if entirely quoted
-3. Remove outer quotes while preserving content
+## File Structure
 
-#### Quote Flag Analysis Functions
-- `word_all_single(unsigned int f)` - Check if entirely single-quoted
-- `word_all_double(unsigned int f)` - Check if entirely double-quoted
-- `word_has_quotes(unsigned int f)` - Check if contains any quotes
-- `word_mixed(unsigned int f)` - Check if mixed quoting
-- `word_unquoted(unsigned int f)` - Check if no quotes
+- `dispatcher_expander.c` - Main expansion dispatch logic
+- `core_expand.c` - Core expansion processing
+- `core_expand_utils.c` - Core expansion utilities
+- `core_expand_helpers.c` - Helper functions for core expansion
+- `mixed_expand.c` - Mixed quote expansion handling
+- `parse_segments.c` - Quote segment parsing
+- `parse_segments_utils.c` - Segment parsing utilities
+- `parse_segments_more_utils.c` - Additional segment utilities
+- `quote_processing.c` - Quote processing and removal
+- `segment_processing.c` - Individual segment processing
+- `segment_utils.c` - Segment management utilities
+- `token_utils.c` - Token manipulation utilities
+- `type_utils.c` - Type checking and classification
+- `expand.c` - High-level expansion interface
+- `expander_utils.c` - General expansion utilities
 
-### Expansion Control
+## Usage Examples
 
-#### `allow_param_expansion(unsigned int f)`
-**Purpose**: Determines if parameter expansion is allowed
-**Rules**:
-- Allowed in unquoted context
-- Allowed in double quotes
-- NOT allowed in single quotes
-
-#### `allow_glob(unsigned int f)`
-**Purpose**: Determines if glob expansion is allowed
-**Rules**:
-- Only allowed in completely unquoted tokens
-- Disabled in any quoted context
-
-## Utility Functions
-
-### String Manipulation
-
-#### `append_string_to_output(char *output, char *str)`
-**Purpose**: Safely concatenates string to growing output
-**Process**:
-1. Reallocate output buffer if needed
-2. Append new string
-3. Return new output pointer
-
-#### `append_literal_segment(char *output, char *start, size_t len)`
-**Purpose**: Appends literal characters without expansion
-**Usage**: For single-quoted segments and escaped characters
-
-### Type Detection
-
-#### `param_determinant(char c)`
-**Purpose**: Classifies characters for parameter expansion
-**Returns**:
-- `ALPHA` for letters and underscore
-- `NUMERIC` for digits
-- `Q_MARK` for `?`
-- `OTHER` for everything else
-
-## Processing Flow
-
-### Token-Level Flow
-1. **Token Iteration**: Process each WORD token
-2. **Flag Analysis**: Check quote flags from lexer
-3. **Expansion Strategy**: Choose expansion method
-4. **Apply Expansions**: Variable, parameter, quote removal
-5. **Update Token**: Replace value with expanded result
-
-### Character-Level Flow (for complex tokens)
-1. **Character Scan**: Iterate through token value
-2. **State Tracking**: Track quote context
-3. **Expansion Detection**: Find `$` characters
-4. **Context Check**: Verify expansion is allowed
-5. **Apply Expansion**: Replace with expanded value
-6. **Continue Scan**: Process remaining characters
-
-### Segment-Based Flow (for mixed tokens)
-1. **Segment Parsing**: Split by quote boundaries
-2. **Type Assignment**: Classify each segment
-3. **Individual Expansion**: Process per segment rules
-4. **Concatenation**: Combine expanded segments
-5. **Final Processing**: Quote removal, glob expansion
-
-## Expansion Rules
-
-### Variable Expansion (`$VAR`)
-- **Unquoted**: Full expansion + glob if applicable
-- **Double-quoted**: Expansion only
-- **Single-quoted**: No expansion (literal `$VAR`)
-
-### Special Parameters
-- `$?` - Last exit status (always expanded in unquoted/double-quoted)
-- `$0` - Program name
-- `$_` - Last argument (not implemented)
-- `$1`, `$2`, ... - Positional parameters (not implemented)
-
-### Quote Removal
-- **After expansion**: Quotes removed from expanded tokens
-- **Preserves content**: Inner quotes and escapes handled correctly
-- **Context aware**: Different rules for different quote types
-
-## Error Handling
-- **Memory allocation**: Check malloc failures during expansion
-- **Invalid variables**: Undefined variables expand to empty string
-- **Malformed syntax**: `${}`, incomplete expansions handled gracefully
-
-## Usage Example
-
-```c
-// Input token: "Hello $USER, status: $?"
-// Environment: USER=john
-// Exit status: 0
-
-t_expander_creds creds;
-creds.last_exit_status = 0;
-creds.envp = env_list;
-
-expand_tokens(&token_list, &creds);
-
-// Result: "Hello john, status: 0"
+### Simple Variable Expansion
+```bash
+export USER=john
+echo $USER          # → ["echo", "john"]
+echo "$USER"        # → ["echo", "john"] 
+echo '$USER'        # → ["echo", "$USER"]
 ```
 
-## Integration Points
-- **Input**: Token list from lexer with quote flags
-- **Output**: Expanded tokens ready for parsing
-- **Environment**: Access to shell environment variables
-- **State**: Last exit status for `$?` expansion
+### Mixed Quoting
+```bash
+echo "Hello "$USER" world"  # → ["echo", "Hello john world"]
+echo $USER"@host"           # → ["echo", "john@host"]
+```
+
+### Field Splitting
+```bash
+export FILES="a.txt b.txt c.txt"
+echo $FILES         # → ["echo", "a.txt", "b.txt", "c.txt"]
+echo "$FILES"       # → ["echo", "a.txt b.txt c.txt"]
+```
+
+## Integration
+
+The expander operates between the lexer and parser:
+1. **Input**: Token list from lexer with quote flags
+2. **Processing**: Expands variables and handles quotes
+3. **Output**: Modified token list with expanded values
+4. **Integration**: Parser receives expanded tokens for AST construction
+
+The module is crucial for proper shell behavior and handles the complex interaction between quoting, variable expansion, and word splitting that defines shell semantics.

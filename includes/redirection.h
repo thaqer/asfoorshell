@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirection.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tbaniatt <tbaniatt@student.42amman.com>    +#+  +:+       +#+        */
+/*   By: daniah <daniah@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 20:08:22 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/22 18:49:39 by tbaniatt         ###   ########.fr       */
+/*   Updated: 2025/08/25 00:20:52 by daniah           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,5 +44,6 @@ typedef struct s_redir
 int						handle_redirections(t_redir *redirs, t_shell *shell);
 int						handle_heredoc_redir(char *delimiter, t_shell *shell);
 int						handle_heredocs_first(t_redir *redirs, t_shell *shell);
+char					*expand_heredoc_line(char *line, t_shell *shell);
 
 #endif

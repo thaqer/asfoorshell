@@ -5,15 +5,26 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/14 12:49:56 by amaassaf          #+#    #+#             */
-/*   Updated: 2025/08/24 12:48:21 by dqaddomi         ###   ########.fr       */
+/*   Created: 2025/04/14 12:49:56 by dqaddomi          #+#    #+#             */
+/*   Updated: 2025/08/27 12:07:45 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-// this function copies n bytes of s into a newly allocated
-// string (duplicate that accounts for a null character for termination -n + 1)
+void	free_tok_list(t_token *head)
+{
+	t_token	*current;
+
+	while (head)
+	{
+		current = head;
+		head = head->next;
+		free(current->value);
+		free(current);
+	}
+}
+
 char	*ft_strndup(const char *s, size_t n)
 {
 	size_t	size;
@@ -25,26 +36,21 @@ char	*ft_strndup(const char *s, size_t n)
 	size = ++n;
 	duplicate = malloc(size * sizeof(char));
 	if (!duplicate)
-		return(NULL);
+		return (NULL);
 	saved_start = duplicate;
-	while(*s && --n)
+	while (*s && --n)
 		*duplicate++ = *s++;
 	*duplicate = '\0';
 	return (saved_start);
-	//return (ft_substr(s, 0, n));
 }
 
 t_token	*create_token(char *value, t_token_type type, t_qflags flags)
 {
 	t_token	*token;
 
-	if(!value)
+	if (!value)
 		return (NULL);
 	token = malloc(sizeof(t_token));
-	// better to write it like this
-	// token = malloc(sizeof(*token));
-	// It allocates memory based on the type the pointer points to,
-	// which avoids mistakes if the type of token ever changes.
 	if (!token)
 		return (NULL);
 	token->value = ft_strdup(value);
@@ -79,143 +85,28 @@ t_token	*append(t_token **head, char *value, t_token_type type, t_qflags flags)
 	return (new_token);
 }
 
-void	free_tok_list(t_token *head)
+void	append_and_handle_failure(t_token **token_list, char *start_ref,
+		char *input_ref)
 {
-	t_token	*current;
+	char		*value;
+	t_qflags	flags;
+	t_token		*prev;
 
-	while (head)
+	value = ft_strndup(start_ref, (input_ref - start_ref));
+	flags = compute_qflags_from_raw(value);
+	if (!append(token_list, value, TOKEN_WORD, flags))
 	{
-		current = head;
-		head = head->next;
-		free(current->value);
-		free(current);
+		free(value);
+		free_tok_list(*token_list);
+		exit(EXIT_FAILURE);
 	}
-}
-
-int	get_size(t_token *head)
-{
-	int		count;
-	t_token	*current;
-
-	count = 0;
-	current = head;
-	while (current != NULL)
-	{
-		count++;
-		current = current->next;
-	}
-	return (count);
-}
-
-void	delete_node(t_token **head, const char *value)
-{
-	t_token	*current;
-	t_token	*prev;
-
-	if (head == NULL || *head == NULL)
+	free(value);
+	prev = get_prev_token(*token_list);
+	if (!prev)
 		return ;
-	current = *head;
-	prev = NULL;
-	while (current != NULL)
+	if (prev->type == TOKEN_HEREDOC)
 	{
-		if (ft_strncmp(current->value, value, ft_strlen(value)) == 0)
-		{
-			if (prev == NULL)
-				*head = current->next;
-			else
-				prev->next = current->next;
-			free(current->value);
-			free(current);
-			return ;
-		}
-		prev = current;
-		current = current->next;
+		if (prev->next->qflags & (QF_HAS_SQ | QF_HAS_DQ))
+			prev->next->qflags |= QF_HD_QUOTED;
 	}
-}
-
-int insert_at_index(t_token **head, size_t index, t_token *new_node)
-{
-	size_t	i;
-	t_token	*cur;
-
-	if (!head || !new_node)
-		return (0);
-	if (index == 0)
-	{
-		new_node->next = *head;
-		*head = new_node;
-		return (1);
-	}
-	i = 0;
-	cur = *head;
-	while (cur && i + 1 < index)
-	{
-		cur = cur->next;
-		i++;
-	}
-	if (!cur)
-		return (0);
-	new_node->next = cur->next;
-	cur->next = new_node;
-	return (1);
-}
-
-t_qflags	compute_qflags_from_raw(char *s)
-{
-	int	has_sq;
-	int	has_dq;
-	int	unquoted;
-	t_qflags flags;
-
-	has_sq = 0;
-	has_dq = 0;
-	unquoted = 0;
-	flags = QF_NONE;
-
-	while (*s)
-	{
-		if(*s == '\'')
-		{
-			has_sq = 1;
-			s++;
-			while (*s != '\'')
-				s++;
-			s++;
-		}
-		else if(*s == '"')
-		{
-			has_dq = 1;
-			s++;
-			while (*s != '"')
-				s++;
-			s++;
-		}
-		else
-		{
-			unquoted = 1;
-			while (*s != '\'' && *s != '"' && *s)
-				s++;
-		}
-	}
-	if (has_sq)
-	{
-		flags |= QF_HAS_SQ;
-	}
-	if (has_dq)
-	{
-		flags |= QF_HAS_DQ;
-	}
-	if (has_sq && !has_dq && !unquoted)
-	{
-		flags |= QF_ALL_SQ;
-	}
-	else if (!has_sq && has_dq && !unquoted)
-	{
-		flags |= QF_ALL_DQ;
-	}
-	if ((has_sq && has_dq) || ((has_sq || has_dq) && unquoted))
-	{
-		flags |= QF_MIXED;
-	}
-	return (flags);
 }

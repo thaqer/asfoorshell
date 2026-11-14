@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execution_utils.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alalauty <alalauty@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dqaddomi <dqaddomi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 00:00:00 by tbaniatt          #+#    #+#             */
-/*   Updated: 2025/08/21 19:42:54 by alalauty         ###   ########.fr       */
+/*   Updated: 2025/08/26 17:29:32 by dqaddomi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,19 +36,24 @@ char	*search_in_path_dirs(char **paths, char *cmd)
 	return (NULL);
 }
 
-static void	execute_child_process(char *command_path,
-				char **argv, t_shell *shell)
+static void	execute_child_process(char *command_path, char **argv,
+		t_shell *shell)
 {
 	char	**env_array;
 
 	setup_signals(SIGNAL_CHILD);
+	close_unused_fds();
 	env_array = env_list_to_array(shell->env);
 	execve(command_path, argv, env_array);
 	perror("execve");
 	if (env_array)
 		ft_free_array(env_array);
 	if (errno == EACCES)
+	{
+		free(command_path);
+		cleanup(shell);
 		exit(126);
+	}
 	exit(127);
 }
 
